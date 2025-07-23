@@ -2,12 +2,17 @@ import { Button, Container, Image, Text, Title } from "@mantine/core";
 import { useState } from "react";
 import f5 from "../../assets/f5.png";
 import { AiOutlineClose } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 
 const SinglePurchaseProduct = () => {
   //   const [quantity, setQuantity] = useState(1);
   const [isCartOpen, setIsCartOpen] = useState(false);
-
+  const navigate = useNavigate();
   const [count, setCount] = useState(0);
+
+  const handleCheckout = () => {
+      navigate("/purchase/product/checkout");
+  }
 
   return (
     <Container size="lg" py="xl" className="mt-[-25px]">
@@ -707,6 +712,7 @@ const SinglePurchaseProduct = () => {
             <div style={{ marginTop: "auto" }}>
               {/* Check Out Button */}
               <Button
+              onClick={handleCheckout}
                 style={{
                   width: "333px",
                   height: "44px",
