@@ -38,6 +38,7 @@ export const Header = () => {
 
   const orderHistory = () => {
     console.log("Order History");
+    navigate("/purchase/history");
   };
 
   const handleBack = () => {

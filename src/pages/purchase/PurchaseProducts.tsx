@@ -9,6 +9,7 @@ import cart from "../../assets/cart.png";
 import { AiFillEye } from "react-icons/ai";
 import { FaArrowRight } from "react-icons/fa";
 import { Tooltip } from "@mantine/core";
+import { useNavigate } from "react-router-dom";
 
 const carouselProducts = [
   { id: 1, name: "DAP", price: "PKR 1,200/kg", image: f1, inStock: true },
@@ -120,46 +121,56 @@ const EyeIcon = () => (
   </div>
 );
 
-const CarouselCard = ({ product }: { product: any }) => (
-  <div
-    className="group relative w-[210px] h-[220px] rounded-2xl border border-[#0F783B] bg-white p-4 flex flex-col"
-    style={{ boxShadow: "0px 10px 10px 0px rgba(0, 0, 0, 0.1)" }}
-  >
-    <EyeIcon />
+const CarouselCard = ({ product }: { product: any }) => {
+  const navigate = useNavigate();
 
-    {/* Product Image */}
-    <div className="flex-1 flex items-center justify-center mb-4 mt-6">
-      <img
-        src={product.image || "/placeholder.svg?height=80&width=80"}
-        alt={product.name}
-        className="w-[102px] h-[102px] object-contain"
-      />
-    </div>
+  const handleNavigate = () => {
+    navigate("/purchase/product");
+  };
 
-    {/* Product Info */}
-    <div className="text-center mb-4">
-      <h3 className="text-black font-semibold text-base font-['Montserrat'] mb-2">
-        {product.name}
-      </h3>
-      <p className="text-[#686868] font-bold text-sm font-['Montserrat']">
-        {product.price}
-      </p>
-    </div>
+  return (
+    <div
+      className="group relative w-[210px] h-[220px] rounded-2xl border border-[#0F783B] bg-white p-4 flex flex-col"
+      style={{ boxShadow: "0px 10px 10px 0px rgba(0, 0, 0, 0.1)" }}
+    >
+      <EyeIcon />
 
-    {/* Always-visible Plus icon */}
-    <div className="absolute bottom-4 right-4 w-[40px] h-[35px] top-[184px] left-[169px] rounded-tl-[4px] rounded-br-[16px] bg-gradient-to-r from-[#13783C] to-[#38BE17] flex items-center justify-center">
-      <Plus size={16} className="text-white font-bold" />
-    </div>
+      {/* Product Image */}
+      <div className="flex-1 flex items-center justify-center mb-4 mt-6">
+        <img
+          src={product.image || "/placeholder.svg?height=80&width=80"}
+          alt={product.name}
+          className="w-[102px] h-[102px] object-contain"
+        />
+      </div>
 
-    {/* Hover Overlay */}
-    <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute inset-0 rounded-2xl flex items-center justify-center z-10">
-      <div className="absolute inset-0 bg-gradient-to-r from-[#13783C] to-[#38BE17] opacity-70 rounded-2xl"></div>
-      <div className="text-white text-center flex items-center justify-center bg-[#BE8B45] w-[110px] h-[34px] rounded-[16px] gap-[10px] font-semibold font-[Montserrat] text-[14px] z-20">
-        <button className="cursor-pointer">Add to cart</button>
+      {/* Product Info */}
+      <div className="text-center mb-4">
+        <h3 className="text-black font-semibold text-base font-['Montserrat'] mb-2">
+          {product.name}
+        </h3>
+        <p className="text-[#686868] font-bold text-sm font-['Montserrat']">
+          {product.price}
+        </p>
+      </div>
+
+      {/* Always-visible Plus icon */}
+      <div className="absolute bottom-4 right-4 w-[40px] h-[35px] top-[184px] left-[169px] rounded-tl-[4px] rounded-br-[16px] bg-gradient-to-r from-[#13783C] to-[#38BE17] flex items-center justify-center">
+        <Plus size={16} className="text-white font-bold" />
+      </div>
+
+      {/* Hover Overlay */}
+      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute inset-0 rounded-2xl flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#13783C] to-[#38BE17] opacity-70 rounded-2xl"></div>
+        <div className="text-white text-center flex items-center justify-center bg-[#BE8B45] w-[110px] h-[34px] rounded-[16px] gap-[10px] font-semibold font-[Montserrat] text-[14px] z-20">
+          <button onClick={handleNavigate} className="cursor-pointer">
+            Add to cart
+          </button>
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 const GridCard = ({ product }: { product: any }) => (
   <div
@@ -261,7 +272,7 @@ export default function AgriculturalProductsUI() {
         {/* Carousel Section */}
         <div className="mb-12">
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 mb-8">
-            {carouselProducts.slice(0,3).map((product) => (
+            {carouselProducts.slice(0, 3).map((product) => (
               <div
                 key={product.id}
                 className="flex justify-center w-full sm:w-auto"
