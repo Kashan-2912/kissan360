@@ -172,8 +172,15 @@ const CarouselCard = ({ product }: { product: any }) => {
   );
 };
 
-const GridCard = ({ product }: { product: any }) => (
-  <div
+const GridCard = ({ product }: { product: any }) => {
+  const navigate = useNavigate();
+
+  const handleNavigate = () => {
+    navigate("/purchase/product");
+  };
+  
+  return(
+    <div
     className="group relative w-[210px] h-[250px] rounded-2xl bg-white p-4 flex flex-col"
     style={{ boxShadow: "0px 10px 10px 0px rgba(0, 0, 0, 0.1)" }}
   >
@@ -231,11 +238,12 @@ const GridCard = ({ product }: { product: any }) => (
     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute inset-0 rounded-2xl flex items-center justify-center z-10">
       <div className="absolute inset-0 bg-gradient-to-r from-[#13783C] to-[#38BE17] opacity-70 rounded-2xl"></div>
       <div className="text-white text-center flex items-center justify-center bg-[#BE8B45] w-[110px] h-[34px] rounded-[16px] gap-[10px] font-semibold font-[Montserrat] text-[14px] z-20">
-        <button className="cursor-pointer">Add to cart</button>
+        <button onClick={handleNavigate} className="cursor-pointer">Add to cart</button>
       </div>
     </div>
   </div>
-);
+  )
+};
 
 // const NavigationArrow = ({
 //   direction,
