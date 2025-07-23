@@ -14,7 +14,7 @@ import {
   Center,
   Textarea,
 } from "@mantine/core";
-import { Check, Upload } from "lucide-react";
+import { Check, Upload, X } from "lucide-react";
 import { HiMiniChevronDown } from "react-icons/hi2";
 import axios from "axios";
 import { productValidationSchema } from "../../validation/productSchema";
@@ -26,24 +26,32 @@ const UpdatePage = () => {
   type ProductFormValues = {
     productName: string;
     category: string;
-    availableQuantity: number;
+    availableQuantity: number | null;
     unit: string;
-    unitPrice: number;
+    unitPrice: number | null;
     productLocation: string;
     description: string;
-    image: FileList | null;
+    image: FileList | File[] | null;
   };
 
   const navigate = useNavigate();
   const [opened, setOpened] = useState(false);
   const [initialData, setInitialData] = useState<Product | null>(null);
-  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/product/${id}`).then((res) => {
-      setInitialData(res.data);
-      setExistingImages(res.data.images || []);
-    });
+    const fetchProduct = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3000/product/${id}`);
+        setInitialData(res.data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      }
+    };
+
+    if (id) {
+      fetchProduct();
+    }
   }, [id]);
 
   const formik = useFormik<ProductFormValues>({
@@ -51,9 +59,9 @@ const UpdatePage = () => {
     initialValues: {
       productName: initialData?.productName || "",
       category: initialData?.category || "",
-      availableQuantity: initialData?.availableQuantity || 0,
+      availableQuantity: initialData?.availableQuantity || null,
       unit: initialData?.unit || "",
-      unitPrice: initialData?.unitPrice || 0,
+      unitPrice: initialData?.unitPrice || null,
       productLocation: initialData?.productLocation || "",
       description: initialData?.description || "",
       image: null,
@@ -61,33 +69,44 @@ const UpdatePage = () => {
     validationSchema: productValidationSchema,
 
     onSubmit: async (values) => {
-      const formData = new FormData();
+      setIsSubmitting(true);
+      
+      try {
+        const formData = new FormData();
 
-      formData.append("productName", values.productName);
-      formData.append("category", values.category);
-      formData.append("availableQuantity", String(values.availableQuantity));
-      formData.append("unit", values.unit);
-      formData.append("unitPrice", String(values.unitPrice));
-      formData.append("productLocation", values.productLocation);
-      formData.append("description", values.description);
+        formData.append("productName", values.productName);
+        formData.append("category", values.category);
+        formData.append("availableQuantity", String(values.availableQuantity ?? 0));
+        formData.append("unit", values.unit);
+        formData.append("unitPrice", String(values.unitPrice ?? 0));
+        formData.append("productLocation", values.productLocation);
+        formData.append("description", values.description);
 
-      // ✅ Always send existing images too:
-      formData.append("existingImages", JSON.stringify(existingImages));
+        if (values.image && values.image.length > 0) {
+          Array.from(values.image).forEach((file) => {
+            formData.append("images", file);
+          });
+        }
 
-      // ✅ If there are new files, append them
-      if (values.image && values.image.length > 0) {
-        Array.from(values.image).forEach((file) => {
-          formData.append("images", file);
+        console.log("FormData entries:", [...formData.entries()]);
+
+        const response = await axios.patch(`http://localhost:3000/product/${id}`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         });
+
+        console.log("Update successful:", response.data);
+
+        // Reset the file input after successful update
+        formik.setFieldValue("image", null);
+        
+        setOpened(true);
+      } catch (error) {
+        console.error("Error updating product:", error);
+      } finally {
+        setIsSubmitting(false);
       }
-
-      await axios.patch(`http://localhost:3000/product/${id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setOpened(true);
     },
   });
 
@@ -95,6 +114,19 @@ const UpdatePage = () => {
     const total =
       (formik.values.availableQuantity ?? 0) * (formik.values.unitPrice ?? 0);
     formik.setFieldValue("totalPrice", total);
+  };
+
+  const handleRemoveImage = (indexToRemove: number) => {
+    if (formik.values.image instanceof FileList) {
+      const filesArray = Array.from(formik.values.image);
+      const updatedFiles = filesArray.filter((_, index) => index !== indexToRemove);
+      
+      // Create a new FileList-like object
+      const dataTransfer = new DataTransfer();
+      updatedFiles.forEach(file => dataTransfer.items.add(file));
+      
+      formik.setFieldValue("image", dataTransfer.files);
+    }
   };
 
   if (!initialData) return <p>Loading...</p>;
@@ -149,6 +181,8 @@ const UpdatePage = () => {
                   onChange={(value) =>
                     formik.setFieldValue("productName", value)
                   }
+                  onBlur={() => formik.setFieldTouched("productName", true)} // Added onBlur handler
+                  error={formik.touched.productName && formik.errors.productName}
                   rightSection={
                     <div
                       style={{
@@ -193,6 +227,7 @@ const UpdatePage = () => {
                   placeholder="Grain"
                   required
                   {...formik.getFieldProps("category")}
+                  error={formik.touched.category && formik.errors.category}
                   styles={{
                     label: {
                       fontWeight: 600,
@@ -220,9 +255,17 @@ const UpdatePage = () => {
                   required
                   hideControls
                   min={0}
-                  value={formik.values.availableQuantity}
-                  onChange={(value) =>
-                    formik.setFieldValue("availableQuantity", value || 0)
+                  value={formik.values.availableQuantity ?? 0}
+                  onChange={(value) => {
+                    formik.setFieldValue("availableQuantity", value || 0);
+                    setTimeout(handleQuantityOrPriceChange, 0);
+                  }}
+                  onBlur={formik.handleBlur}
+                  error={
+                    formik.touched.availableQuantity &&
+                    formik.errors.availableQuantity
+                      ? formik.errors.availableQuantity
+                      : undefined
                   }
                   styles={{
                     label: {
@@ -256,6 +299,8 @@ const UpdatePage = () => {
                   ]}
                   value={formik.values.unit}
                   onChange={(value) => formik.setFieldValue("unit", value)}
+                  onBlur={() => formik.setFieldTouched("unit", true)}
+                  error={formik.touched.unit && formik.errors.unit}
                   rightSection={
                     <div
                       style={{
@@ -301,11 +346,12 @@ const UpdatePage = () => {
                   required
                   hideControls
                   min={0}
-                  value={formik.values.unitPrice}
+                  value={formik.values.unitPrice ?? 0}
                   onChange={(value) => {
                     formik.setFieldValue("unitPrice", value || 0);
                     setTimeout(handleQuantityOrPriceChange, 0);
                   }}
+                  error={formik.touched.unitPrice && formik.errors.unitPrice}
                   styles={{
                     label: {
                       fontWeight: 600,
@@ -331,7 +377,17 @@ const UpdatePage = () => {
                   label="Product Location"
                   placeholder="Enter product location"
                   required
-                  {...formik.getFieldProps("productLocation")}
+                  value={formik.values.productLocation}
+                  onChange={(event) =>
+                    formik.setFieldValue(
+                      "productLocation",
+                      event.currentTarget.value
+                    )
+                  }
+                  error={
+                    formik.touched.productLocation &&
+                    formik.errors.productLocation
+                  }
                   styles={{
                     label: {
                       fontWeight: 600,
@@ -369,7 +425,7 @@ const UpdatePage = () => {
                       border: "1px solid #00000012",
                       borderRadius: "8px",
                       backgroundColor: "#F5F5F599",
-                      padding: "32px 16px",
+                      padding: "16px",
                       textAlign: "center",
                       position: "relative",
                       minHeight: "139px",
@@ -379,11 +435,13 @@ const UpdatePage = () => {
                       justifyContent: "center",
                     }}
                   >
+                    {/* Upload Area */}
                     <div
                       style={{
                         display: "flex",
                         alignItems: "center",
                         gap: "8px",
+                        marginBottom: "8px",
                       }}
                     >
                       <p
@@ -400,50 +458,74 @@ const UpdatePage = () => {
                       <Upload size={20} style={{ color: "#9D9999" }} />
                     </div>
 
-                    {/* ✅ EXISTING IMAGES PREVIEW */}
-                    {existingImages.length > 0 && (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexWrap: "wrap",
-                          marginTop: "12px",
-                          gap: "8px",
-                        }}
-                      >
-                        {existingImages.map((url, index) => (
-                          <div key={index} style={{ position: "relative" }}>
-                            <img
-                              src={`http://localhost:3000${url}`}
-                              alt={`Product ${index}`}
-                              style={{
-                                width: "80px",
-                                height: "80px",
-                                objectFit: "cover",
-                                borderRadius: "4px",
-                              }}
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
+                    {/* New Files Preview */}
                     {formik.values.image instanceof FileList &&
                       formik.values.image.length > 0 && (
-                        <div style={{ marginTop: "8px", textAlign: "left" }}>
-                          {Array.from(formik.values.image).map(
-                            (file, index) => (
-                              <p
-                                key={index}
-                                style={{
-                                  fontSize: "11px",
-                                  color: "#6B7280",
-                                  margin: 0,
-                                }}
-                              >
-                                {file.name}
-                              </p>
-                            )
-                          )}
+                        <div style={{ marginTop: "8px", width: "100%" }}>
+                          <p style={{ fontSize: "11px", color: "#6B7280", margin: "0 0 8px 0", fontWeight: 600 }}>
+                            Selected files:
+                          </p>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: "8px",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            {Array.from(formik.values.image).map((file, index) => (
+                              <div key={index} style={{ position: "relative" }}>
+                                <img
+                                  src={URL.createObjectURL(file)}
+                                  alt={`Selected ${index}`}
+                                  style={{
+                                    width: "60px",
+                                    height: "60px",
+                                    objectFit: "cover",
+                                    borderRadius: "4px",
+                                    border: "1px solid #e5e5e5",
+                                  }}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRemoveImage(index)}
+                                  style={{
+                                    position: "absolute",
+                                    top: "-5px",
+                                    right: "-5px",
+                                    background: "#ef4444",
+                                    border: "none",
+                                    borderRadius: "50%",
+                                    width: "20px",
+                                    height: "20px",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    cursor: "pointer",
+                                    color: "white",
+                                  }}
+                                >
+                                  <X size={12} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ textAlign: "left" }}>
+                            {Array.from(formik.values.image).map(
+                              (file, index) => (
+                                <p
+                                  key={index}
+                                  style={{
+                                    fontSize: "10px",
+                                    color: "#6B7280",
+                                    margin: "0 0 2px 0",
+                                  }}
+                                >
+                                  {file.name}
+                                </p>
+                              )
+                            )}
+                          </div>
                         </div>
                       )}
 
@@ -465,6 +547,20 @@ const UpdatePage = () => {
                       }}
                     />
                   </div>
+
+                  {/* Added error display for image field to match Add Product */}
+                  {formik.touched.image && formik.errors.image && (
+                    <div
+                      className="font-[Montserrat]"
+                      style={{
+                        color: "#EF4444",
+                        fontSize: "12px",
+                        marginTop: "4px",
+                      }}
+                    >
+                      {formik.errors.image}
+                    </div>
+                  )}
                 </div>
               </Grid.Col>
 
@@ -475,6 +571,7 @@ const UpdatePage = () => {
                   placeholder="Write description of the product..."
                   rows={6}
                   {...formik.getFieldProps("description")}
+                  error={formik.touched.description && formik.errors.description}
                   styles={{
                     label: {
                       fontWeight: 600,
@@ -497,11 +594,12 @@ const UpdatePage = () => {
 
             <Group justify="flex-start" mt={{ base: 40, md: 100 }} gap="xl">
               <Button
-                onClick={() => formik.submitForm()}
+                type="submit"
                 className="font-[Montserrat]"
                 color="#0F783B"
-                type="submit"
                 variant="filled"
+                loading={isSubmitting}
+                disabled={isSubmitting}
                 style={{
                   fontWeight: 600,
                   fontSize: "12px",
@@ -512,11 +610,12 @@ const UpdatePage = () => {
                 }}
                 radius="xl"
               >
-                Update Product
+                {isSubmitting ? "Updating..." : "Update Product"}
               </Button>
               <Button
                 className="font-[Montserrat]"
                 variant="outline"
+                disabled={isSubmitting}
                 style={{
                   backgroundColor: "#F3FBF2",
                   fontWeight: 600,
