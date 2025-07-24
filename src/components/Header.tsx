@@ -72,7 +72,7 @@ const NotificationItem = ({ notification }: NotificationItemProps) => (
       <img
         src={notification.image}
         alt="notification"
-        className="w-[25px] h-[25px] rounded-full object-cover flex-shrink-0"
+        className="w-[25px] h-[25px] rounded-full object-cover flex-shrink-0 border border-[#BE8B45]"
       />
       
       {/* Main content div */}
@@ -81,13 +81,13 @@ const NotificationItem = ({ notification }: NotificationItemProps) => (
           {/* Left div - Title and Description */}
           <div className="flex flex-col justify-center flex-1 min-w-0 pr-2">
             <div 
-              className="font-[Montserrat] font-medium text-[7px] leading-[100%] text-[#000000] break-words"
+              className="font-[Montserrat] font-medium text-[9px] leading-[100%] text-[#000000] break-words"
               style={{ letterSpacing: '0%' }}
             >
               {notification.title}
             </div>
             <div 
-              className="font-[Montserrat] font-normal text-[7px] leading-[100%] text-[#8E8E8E] break-words mt-2"
+              className="font-[Montserrat] font-normal text-[9px] leading-[100%] text-[#8E8E8E] break-words mt-2"
               style={{ letterSpacing: '0%' }}
             >
               {notification.description}
@@ -97,13 +97,13 @@ const NotificationItem = ({ notification }: NotificationItemProps) => (
           {/* Right div - Date and Time */}
           <div className="flex flex-col justify-center items-end flex-shrink-0">
             <div 
-              className="font-[Montserrat] font-medium text-[6px] leading-[100%] text-[#2F2F2F] whitespace-nowrap"
+              className="font-[Montserrat] font-medium text-[9px] leading-[100%] text-[#2F2F2F] whitespace-nowrap"
               style={{ letterSpacing: '0%' }}
             >
               {notification.date}
             </div>
             <div 
-              className="font-[Montserrat] font-normal text-[6px] leading-[100%] text-[#8E8E8E] whitespace-nowrap mt-2"
+              className="font-[Montserrat] font-normal text-[9px] leading-[100%] text-[#8E8E8E] whitespace-nowrap mt-2"
               style={{ letterSpacing: '0%' }}
             >
               {notification.time}
@@ -219,7 +219,7 @@ export const Header = () => {
             {/* Notifications Modal */}
             {showNotifications && (
               <div 
-                className="absolute top-[45px] left-0 w-[274px] h-[252px] bg-white rounded-[4px] z-50 overflow-hidden"
+                className="absolute top-[45px] left-0 w-[320px] h-[340px] bg-white rounded-[4px] z-50 overflow-hidden"
                 style={{
                   border: '2px solid #FFFFFF',
                   boxShadow: '0px 4px 10px 0px #0000001A'
@@ -247,7 +247,7 @@ export const Header = () => {
                 </div>
 
                 {/* Notifications List */}
-                <div className="overflow-y-auto overflow-x-hidden" style={{ height: 'calc(252px - 52px)' }}>
+                <div className="overflow-y-auto scrollbar-hide overflow-x-hidden" style={{ height: 'calc(292px - 2px)' }}>
                   {displayedNotifications.map((notification) => (
                     <NotificationItem key={notification.id} notification={notification} />
                   ))}
