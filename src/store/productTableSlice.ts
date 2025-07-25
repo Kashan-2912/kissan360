@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type { ProductTableItem, ProductFilters } from "../types/product"
+import type { ProductTableItem, ProductFilters } from "../types/index"
 
 interface ProductTableState {
   products: ProductTableItem[]

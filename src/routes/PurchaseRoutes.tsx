@@ -9,7 +9,7 @@ import ViewOrderDetails from "../pages/purchase/ViewOrderDetails";
 export const PurchaseRoutes = (
   <Route path="/purchase" element={<DashboardLayout />}>
     <Route index element={<PurchaseProducts />} />
-    <Route path="/purchase/product" element={<SinglePurchaseProduct />} />
+    <Route path="/purchase/product/:id" element={<SinglePurchaseProduct />} />
     <Route path="/purchase/product/checkout" element={<CheckoutPage />} />
     <Route path="/purchase/history" element={<OrderHistory />} />
     <Route path="/purchase/order/1" element={<ViewOrderDetails />} /> // temporary
