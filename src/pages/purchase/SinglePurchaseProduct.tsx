@@ -1,17 +1,88 @@
 import { Button, Container, Image, Text, Title } from "@mantine/core";
-import { useState } from "react";
-import f5 from "../../assets/f5.png";
+import { useEffect, useState } from "react";
+// import f5 from "../../assets/f5.png";
 import { AiOutlineClose } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  selectProductById,
+  updateProductCartStatus,
+} from "../../store/purchaseProductSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart } from "../../store/cartSlice";
+import type { PurchaseProduct } from "../../types";
+import type { RootState } from "../../store";
+import { removeProductFromCart } from "../../store/cartSlice";
 
 const SinglePurchaseProduct = () => {
-  //   const [quantity, setQuantity] = useState(1);
+  const { productId } = useParams();
+  const productIdNumber = Number(productId);
+
+  console.log("Product ID:", productIdNumber);
+
+  const [quantity, setQuantity] = useState(1);
+  const [product, setProduct] = useState<PurchaseProduct | undefined>(
+    undefined
+  );
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(null);
+
+  const pdt = useSelector((state: RootState) =>
+    selectProductById(state, productIdNumber)
+  );
+
+  useEffect(() => {
+    setProduct(pdt);
+    console.log("PRODUCT NAME: ", pdt?.name);
+  }, [pdt]);
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const navigate = useNavigate();
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
+  const dispatch = useDispatch();
 
   const handleCheckout = () => {
-      navigate("/purchase/product/checkout");
+    navigate(`/purchase/product/${productId}/checkout`);
+  };
+
+  const handleAddToCart = () => {
+    console.log("Entered add to cart");
+
+    const updatedProduct = { ...product, addToCart: true };
+
+    // just changes addToCart boolean to true and does nothing else ...
+    dispatch(
+      updateProductCartStatus({ productId: productIdNumber, addToCart: true })
+    );
+
+    dispatch(addToCart({ product: updatedProduct, quantity: count }));
+
+    console.log(
+      `Added product`,
+      updatedProduct,
+      `to cart with quantity ${count}`
+    );
+
+    setIsCartOpen(true);
+  };
+
+  const handleIncrement = () => {
+    const newCount = count + 1;
+    setCount(newCount);
+    setQuantity(newCount);
+  };
+
+  const handleDecrement = () => {
+    const newCount = Math.max(1, count - 1);
+    setCount(newCount);
+    setQuantity(newCount);
+  };
+
+  const handleRemove = (productIdNumber: number) => {
+    dispatch(
+      updateProductCartStatus({ productId: productIdNumber, addToCart: false })
+    );
+    dispatch(removeProductFromCart(productIdNumber));
+    setIsCartOpen(false);
   }
 
   return (
@@ -44,7 +115,7 @@ const SinglePurchaseProduct = () => {
               paddingLeft: 12,
               paddingRight: 12,
               borderRadius: 15,
-              backgroundColor: "#0F783B",
+              backgroundColor: pdt?.inStock ? "#0F783B" : "#FF6B6B",
               color: "white",
               fontWeight: 600,
               fontFamily: "Montserrat",
@@ -53,12 +124,12 @@ const SinglePurchaseProduct = () => {
             }}
             variant="filled"
           >
-            In Stock
+            {pdt?.inStock ? "In Stock" : "Out of Stock"}
           </Button>
 
           <Image
-            src={f5}
-            alt="Sarzab Nitrophos"
+            src={pdt?.image}
+            alt={pdt?.name}
             style={{
               width: "100%",
               height: "100%",
@@ -81,7 +152,7 @@ const SinglePurchaseProduct = () => {
             }}
             order={2}
           >
-            Sarzab Nitrophos NP
+            {pdt?.name}
           </Title>
 
           <Text
@@ -94,7 +165,7 @@ const SinglePurchaseProduct = () => {
             }}
             size="lg"
           >
-            PKR 5,000{" "}
+            PKR {pdt?.price * count}{" "}
             <Text
               span
               fw={700}
@@ -102,7 +173,7 @@ const SinglePurchaseProduct = () => {
               size="sm"
               c="#646464"
             >
-              (1 bag)
+              ({count} bag)
             </Text>
           </Text>
 
@@ -123,9 +194,40 @@ const SinglePurchaseProduct = () => {
               span
               fw={400}
             >
-              Fertilizers
+              {pdt?.category}
             </Text>
           </Text>
+
+          {/* Rating and Reviews */}
+          {/* {pdt?.rating && pdt?.reviews && (
+            <div
+              style={{
+                marginBottom: "15px",
+                display: "flex",
+                alignItems: "center",
+                gap: "8px",
+              }}
+            >
+              <Text
+                style={{
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  color: "#FFB800",
+                }}
+              >
+                ★ {pdt?.rating}
+              </Text>
+              <Text
+                style={{
+                  fontFamily: "Montserrat",
+                  fontSize: "14px",
+                  color: "#646464",
+                }}
+              >
+                ({pdt?.reviews} reviews)
+              </Text>
+            </div>
+          )} */}
 
           <div style={{ marginBottom: "20px" }}>
             <div
@@ -143,7 +245,7 @@ const SinglePurchaseProduct = () => {
               }}
             >
               <button
-                onClick={() => setCount(Math.max(1, count - 1))}
+                onClick={handleDecrement}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -184,7 +286,7 @@ const SinglePurchaseProduct = () => {
               </span>
 
               <button
-                onClick={() => setCount(count + 1)}
+                onClick={handleIncrement}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -210,16 +312,18 @@ const SinglePurchaseProduct = () => {
 
             {/* Add to Cart Button */}
             <Button
-              onClick={() => setIsCartOpen(true)}
+              onClick={handleAddToCart}
+              disabled={!pdt?.inStock}
               style={{
                 border: "1px solid #0F783B1A",
                 borderRadius: "100px",
                 width: "175px",
                 height: "40px",
-                backgroundColor: "#0F783B",
+                backgroundColor: pdt?.inStock ? "#0F783B" : "#CCCCCC",
                 fontFamily: "Montserrat",
                 fontWeight: 600,
                 fontSize: "12px",
+                cursor: pdt?.inStock ? "pointer" : "not-allowed",
               }}
             >
               + Add to Cart
@@ -250,14 +354,7 @@ const SinglePurchaseProduct = () => {
               }}
               fw={400}
             >
-              Boost your agricultural yield with our high-quality Basic
-              Fertilizers, available exclusively on Zarea. Designed to meet the
-              nutritional needs of various crops, our Basic Fertilizers provide
-              essential nutrients to enhance soil fertility and promote healthy
-              plant growth. Ideal for farmers and agricultural businesses across
-              Pakistan, our fertilizers ensure optimal crop production and
-              sustainability. Basic Fertilizers provide essential nutrients to
-              enhance
+              {pdt?.description}
             </Text>
           </div>
 
@@ -451,8 +548,8 @@ const SinglePurchaseProduct = () => {
               }}
             >
               <img
-                src={f5}
-                alt="Nitrophos NP"
+                src={pdt?.image}
+                alt={pdt?.name}
                 style={{
                   width: "243px",
                   height: "243px",
@@ -484,7 +581,7 @@ const SinglePurchaseProduct = () => {
                   marginBottom: "20px",
                 }}
               >
-                Nitrophos NP
+                {pdt?.name}
               </div>
 
               {/* Category */}
@@ -511,7 +608,7 @@ const SinglePurchaseProduct = () => {
                     color: "#646464",
                   }}
                 >
-                  Fertilizers
+                  {pdt?.category}
                 </span>
               </div>
 
@@ -527,7 +624,7 @@ const SinglePurchaseProduct = () => {
                     color: "#0F783B",
                   }}
                 >
-                  PKR. 5,000{" "}
+                  PKR{" "}{pdt?.price * count}{" "}
                 </span>
                 <span
                   style={{
@@ -539,7 +636,7 @@ const SinglePurchaseProduct = () => {
                     color: "#646464",
                   }}
                 >
-                  (1 bag)
+                  ({count} bag)
                 </span>
               </div>
 
@@ -564,7 +661,7 @@ const SinglePurchaseProduct = () => {
                     gap: "12px",
                   }}
                 >
-                  <button
+                  {/* <button
                     style={{
                       background: "transparent",
                       border: "none",
@@ -576,7 +673,7 @@ const SinglePurchaseProduct = () => {
                     }}
                   >
                     -
-                  </button>
+                  </button> */}
                   <span
                     style={{
                       fontFamily: "Montserrat",
@@ -587,9 +684,9 @@ const SinglePurchaseProduct = () => {
                       textAlign: "center",
                     }}
                   >
-                    1
+                    {count}
                   </span>
-                  <button
+                  {/* <button
                     style={{
                       background: "transparent",
                       border: "none",
@@ -601,11 +698,12 @@ const SinglePurchaseProduct = () => {
                     }}
                   >
                     +
-                  </button>
+                  </button> */}
                 </div>
 
                 {/* Remove Button */}
                 <button
+                onClick={() => handleRemove(productIdNumber)}
                   style={{
                     background: "transparent",
                     border: "none",
@@ -667,7 +765,7 @@ const SinglePurchaseProduct = () => {
                     color: "#000000",
                   }}
                 >
-                  PKR. 5,000
+                  {pdt?.price * count}
                 </span>
               </div>
 
@@ -703,7 +801,7 @@ const SinglePurchaseProduct = () => {
                     textAlign: "center",
                   }}
                 >
-                  PKR. 5,000
+                  {pdt?.price * count}
                 </span>
               </div>
             </div>
@@ -712,7 +810,7 @@ const SinglePurchaseProduct = () => {
             <div style={{ marginTop: "auto" }}>
               {/* Check Out Button */}
               <Button
-              onClick={handleCheckout}
+                onClick={handleCheckout}
                 style={{
                   width: "333px",
                   height: "44px",

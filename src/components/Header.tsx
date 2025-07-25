@@ -136,8 +136,8 @@ export const Header = () => {
     "/add-new": "New Product",
     "/product/:id": "My Product",
     "/purchase": "Marketplace",
-    "/purchase/product": "Marketplace", // temporary... will be /purchase/product/:id
-    "/purchase/product/checkout": "Marketplace", // temporary... will be /purchase/product/:id/checkout
+    "/purchase/product/:id": "Marketplace",
+    "/purchase/product/:id/checkout": "Marketplace",
     "/purchase/history": "Marketplace",
     "/purchase/order/1": "Inventory", // temporary, should be /purchase/order/:id
   };
