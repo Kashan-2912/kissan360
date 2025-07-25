@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Star } from "lucide-react";
+import { 
+  // ChevronLeft,
+  // ChevronRight, 
+  Plus, 
+  Star
+ } from "lucide-react";
 import f1 from "../../assets/f1.png";
 import f2 from "../../assets/f2.png";
 import f3 from "../../assets/f3.png";
@@ -11,56 +16,9 @@ import { FaArrowRight } from "react-icons/fa";
 import { Tooltip } from "@mantine/core";
 import { useNavigate } from "react-router-dom";
 
-// Type definitions
-interface BaseProduct {
-  id: number;
-  name: string;
-  price: string;
-  image: string;
-  category: Category;
-  description: string;
-}
-
-interface CarouselProduct extends BaseProduct {
-  inStock: boolean;
-  addToCart?: boolean;
-}
-
-interface GridProduct extends BaseProduct {
-  rating: number;
-  reviews: number;
-}
-
-type Category = "All" | "Fertilizers" | "Pesticides" | "Weed";
-
-interface CarouselCardProps {
-  product: CarouselProduct;
-}
-
-interface GridCardProps {
-  product: GridProduct;
-}
-
-// Data
-const carouselProducts: CarouselProduct[] = [
-  { 
-    id: 1, 
-    name: "DAP", 
-    price: "PKR 1,200/kg", 
-    image: f1, 
-    inStock: true,
-    category: "Fertilizers",
-    description: "Diammonium Phosphate (DAP) is a high-quality fertilizer providing essential nitrogen and phosphorus for healthy plant growth and root development."
-  },
-  { 
-    id: 2, 
-    name: "Urea", 
-    price: "PKR 1,200/kg", 
-    image: f4, 
-    inStock: true,
-    category: "Fertilizers",
-    description: "Pure nitrogen fertilizer ideal for promoting vigorous leaf growth and overall plant development. Suitable for all crops."
-  },
+const carouselProducts = [
+  { id: 1, name: "DAP", price: "PKR 1,200/kg", image: f1, inStock: true },
+  { id: 2, name: "Urea", price: "PKR 1,200/kg", image: f4, inStock: true },
   {
     id: 3,
     name: "DAP",
@@ -68,30 +26,12 @@ const carouselProducts: CarouselProduct[] = [
     image: f1,
     inStock: false,
     addToCart: true,
-    category: "Fertilizers",
-    description: "Premium grade Diammonium Phosphate with enhanced formula for maximum nutrient absorption and crop yield."
   },
-  { 
-    id: 4, 
-    name: "Urea", 
-    price: "PKR 1,200/kg", 
-    image: f4, 
-    inStock: true,
-    category: "Fertilizers",
-    description: "High-grade urea fertilizer with slow-release formula to provide consistent nitrogen supply throughout the growing season."
-  },
-  { 
-    id: 5, 
-    name: "Urea", 
-    price: "PKR 1,200/kg", 
-    image: f5, 
-    inStock: true,
-    category: "Fertilizers",
-    description: "Concentrated nitrogen fertilizer perfect for cereal crops, vegetables, and fruit trees. Fast-acting formula."
-  },
+  { id: 4, name: "Urea", price: "PKR 1,200/kg", image: f4, inStock: true },
+  { id: 5, name: "Urea", price: "PKR 1,200/kg", image: f5, inStock: true },
 ];
 
-const gridProducts: GridProduct[] = [
+const gridProducts = [
   {
     id: 1,
     name: "Nitrophos",
@@ -99,8 +39,6 @@ const gridProducts: GridProduct[] = [
     image: f1,
     rating: 4,
     reviews: 12,
-    category: "Fertilizers",
-    description: "Liquid nitrogen-phosphorus fertilizer for quick nutrient uptake. Ideal for foliar application and soil treatment."
   },
   {
     id: 2,
@@ -109,8 +47,6 @@ const gridProducts: GridProduct[] = [
     image: f2,
     rating: 5,
     reviews: 8,
-    category: "Fertilizers",
-    description: "Calcium Ammonium Nitrate provides both nitrogen and calcium, improving soil structure and plant nutrition."
   },
   {
     id: 3,
@@ -119,8 +55,6 @@ const gridProducts: GridProduct[] = [
     image: f3,
     rating: 4,
     reviews: 12,
-    category: "Fertilizers",
-    description: "Advanced liquid fertilizer with balanced NPK ratio for optimal plant growth and higher crop yields."
   },
   {
     id: 4,
@@ -129,8 +63,6 @@ const gridProducts: GridProduct[] = [
     image: f4,
     rating: 4,
     reviews: 22,
-    category: "Fertilizers",
-    description: "Premium urea fertilizer with anti-caking agents for easy application and maximum nitrogen efficiency."
   },
   {
     id: 5,
@@ -139,8 +71,6 @@ const gridProducts: GridProduct[] = [
     image: f5,
     rating: 5,
     reviews: 8,
-    category: "Fertilizers",
-    description: "High-quality calcium ammonium nitrate for improved root development and disease resistance in crops."
   },
   {
     id: 6,
@@ -149,8 +79,6 @@ const gridProducts: GridProduct[] = [
     image: f3,
     rating: 4,
     reviews: 12,
-    category: "Pesticides",
-    description: "Multi-purpose liquid fertilizer with added micronutrients for comprehensive plant nutrition."
   },
   {
     id: 7,
@@ -159,8 +87,6 @@ const gridProducts: GridProduct[] = [
     image: f1,
     rating: 5,
     reviews: 8,
-    category: "Pesticides",
-    description: "Granulated calcium ammonium nitrate with controlled-release technology for sustained nutrient supply."
   },
   {
     id: 8,
@@ -169,8 +95,6 @@ const gridProducts: GridProduct[] = [
     image: f4,
     rating: 4,
     reviews: 12,
-    category: "Pesticides",
-    description: "Concentrated liquid fertilizer suitable for drip irrigation and foliar feeding systems."
   },
   {
     id: 9,
@@ -179,8 +103,6 @@ const gridProducts: GridProduct[] = [
     image: f2,
     rating: 4,
     reviews: 11,
-    category: "Weed",
-    description: "Agricultural grade urea with uniform granule size for even distribution and consistent crop response."
   },
   {
     id: 10,
@@ -189,14 +111,12 @@ const gridProducts: GridProduct[] = [
     image: f5,
     rating: 5,
     reviews: 8,
-    category: "Weed",
-    description: "Professional-grade calcium ammonium nitrate for commercial farming operations and greenhouse cultivation."
   },
 ];
 
-const categories: Category[] = ["All", "Fertilizers", "Pesticides", "Weed"];
+const categories = ["All", "Fertilizers", "Pesticides", "Weed"];
 
-const EyeIcon: React.FC = () => (
+const EyeIcon = () => (
   <div
     className="w-8 h-8 rounded-full border-[0.5px] border-[#0F783B] bg-white flex items-center justify-center absolute top-3 right-3"
     style={{ boxShadow: "0px 4px 8px 0px rgba(0, 0, 0, 0.25)" }}
@@ -206,15 +126,15 @@ const EyeIcon: React.FC = () => (
   </div>
 );
 
-const AgriculturalProductsUI: React.FC = () => {
-  const [activeCategory, setActiveCategory] = useState<Category>("Fertilizers");
+export default function AgriculturalProductsUI() {
+  const [activeCategory, setActiveCategory] = useState("Fertilizers");
   const navigate = useNavigate();
 
-  const handleNavigate = (productId: number): void => {
+  const handleNavigate = (productId: number) => {
     navigate(`/purchase/product/${productId}`);
   };
 
-  const CarouselCard: React.FC<CarouselCardProps> = ({ product }) => (
+  const CarouselCard = ({ product } : any) => (
     <div
       className="group relative w-[210px] h-[220px] rounded-2xl border border-[#0F783B] bg-white p-4 flex flex-col"
       style={{ boxShadow: "0px 10px 10px 0px rgba(0, 0, 0, 0.1)" }}
@@ -257,7 +177,7 @@ const AgriculturalProductsUI: React.FC = () => {
     </div>
   );
 
-  const GridCard: React.FC<GridCardProps> = ({ product }) => (
+  const GridCard = ({ product } : any) => (
     <div
       className="group relative w-[210px] h-[250px] rounded-2xl bg-white p-4 flex flex-col"
       style={{ boxShadow: "0px 10px 10px 0px rgba(0, 0, 0, 0.1)" }}
@@ -289,7 +209,7 @@ const AgriculturalProductsUI: React.FC = () => {
         {/* Stars + Reviews */}
         <div className="flex items-center gap-1">
           <div className="flex items-center">
-            {[1, 2, 3, 4, 5].map((star: number) => (
+            {[1, 2, 3, 4, 5].map((star) => (
               <Star
                 key={star}
                 size={14}
@@ -354,7 +274,7 @@ const AgriculturalProductsUI: React.FC = () => {
         {/* Carousel Section */}
         <div className="mb-12">
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 mb-8">
-            {carouselProducts.slice(0, 3).map((product: CarouselProduct) => (
+            {carouselProducts.slice(0, 3).map((product) => (
               <div
                 key={product.id}
                 className="flex justify-center w-full sm:w-auto"
@@ -383,7 +303,7 @@ const AgriculturalProductsUI: React.FC = () => {
         sm:flex sm:gap-2 sm:overflow-x-auto sm:scrollbar-hide sm:justify-center
       "
             >
-              {categories.map((category: Category) => (
+              {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setActiveCategory(category)}
@@ -406,7 +326,7 @@ const AgriculturalProductsUI: React.FC = () => {
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8 px-4 mb-12">
-          {gridProducts.map((product: GridProduct) => (
+          {gridProducts.map((product) => (
             <div className="w-full flex justify-center" key={product.id}>
               <GridCard product={product} />
             </div>
@@ -443,6 +363,4 @@ const AgriculturalProductsUI: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default AgriculturalProductsUI;
+}

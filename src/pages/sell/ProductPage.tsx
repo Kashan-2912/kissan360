@@ -5,7 +5,7 @@ import { Trash2 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios"; // ✅ make sure axios is installed
 import { useDispatch } from "react-redux";
-import { deleteProduct } from "../../store/productTableSlice";
+import { deleteProduct } from "../../store/sellProductSlice";
 import type { AppDispatch } from "../../store";
 
 // 1️⃣ Define your Product type

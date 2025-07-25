@@ -16,7 +16,7 @@ import {
 } from "@mantine/core";
 import { Upload, Check } from "lucide-react";
 import { productValidationSchema } from "../validation/productSchema";
-import { addProduct } from "../store/productSlice";
+import { addProduct } from "../store/sellProductSlice";
 import { HiMiniChevronDown } from "react-icons/hi2";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";

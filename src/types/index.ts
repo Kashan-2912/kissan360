@@ -31,7 +31,7 @@ export interface PurchaseProduct {
 
 export interface CartItem {
   id: number;
-  product: Product;
+  product: PurchaseProduct;
   quantity: number;
   totalPrice: number;
 }

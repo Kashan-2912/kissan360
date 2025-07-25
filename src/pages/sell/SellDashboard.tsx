@@ -15,7 +15,7 @@ import {
   applyFilters,
   resetFilters,
   deleteProduct,
-} from "../../store/productTableSlice";
+} from "../../store/sellProductSlice";
 import { MdModeEditOutline } from "react-icons/md";
 import View from "../../assets/search-file.png";
 import { FaSortDown } from "react-icons/fa";
