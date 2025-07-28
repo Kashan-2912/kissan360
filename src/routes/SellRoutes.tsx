@@ -6,10 +6,10 @@ import ProductPage from "../pages/sell/ProductPage";
 import UpdatePage from "../pages/sell/UpdatePage";
 
 export const SellRoutes = (
-  <Route path="/" element={<DashboardLayout />}>
-    <Route index element={<SellDashboard />} handle={{ title: "My Products" }} />
-    <Route path="add-new" element={<AddNewProduct />} handle={{ title: "New Product" }} />
-    <Route path="product/:id" element={<ProductPage />} handle={{ title: "My Product" }} />
-    <Route path="update-product/:id" element={<UpdatePage />} handle={{ title: "Update Product" }} />
+  <Route path="/sell" element={<DashboardLayout />}>
+    <Route index element={<SellDashboard />} />
+    <Route path="/sell/add-new" element={<AddNewProduct />} />
+    <Route path="/sell/product/:id" element={<ProductPage />} />
+    <Route path="/sell/update-product/:id" element={<UpdatePage />} />
   </Route>
 );

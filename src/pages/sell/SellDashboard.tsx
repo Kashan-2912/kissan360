@@ -105,11 +105,11 @@ const SellDashboard = () => {
 
   const handleView = (productId: string) => {
     console.log("Viewing product with ID:", productId);
-    navigate(`/product/${productId}`);
+    navigate(`/sell/product/${productId}`);
   };
 
   const handleEdit = (productId: string) => {
-    navigate(`/update-product/${productId}`);
+    navigate(`/sell/update-product/${productId}`);
   };
 
   useEffect(() => {

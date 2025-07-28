@@ -67,14 +67,14 @@ const ProductPage: React.FC = () => {
     try {
       await axios.delete(`http://localhost:3000/product/${productId}`);
       dispatch(deleteProduct(productId));
-      navigate("/");
+      navigate("/sell");
     } catch (error) {
       console.error("Failed to delete product:", error);
     }
   };
 
   const handleEdit = (productId: string) => {
-    navigate(`/update-product/${productId}`);
+    navigate(`/sell/update-product/${productId}`);
   };
 
   if (loading) return <p>Loading...</p>;

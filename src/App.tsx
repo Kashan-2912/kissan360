@@ -7,7 +7,6 @@ import "@mantine/core/styles.css";
 import { SellRoutes } from "./routes/SellRoutes";
 import { PurchaseRoutes } from "./routes/PurchaseRoutes";
 
-
 function App() {
   return (
     <Provider store={store}>

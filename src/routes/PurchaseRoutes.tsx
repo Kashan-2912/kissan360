@@ -12,6 +12,6 @@ export const PurchaseRoutes = (
     <Route path="/purchase/product/:productId" element={<SinglePurchaseProduct />} />
     <Route path="/purchase/product/:productId/checkout" element={<CheckoutPage />} />
     <Route path="/purchase/history" element={<OrderHistory />} />
-    <Route path="/purchase/order/1" element={<ViewOrderDetails />} /> // temporary
+    <Route path="/purchase/order/1" element={<ViewOrderDetails />} />
   </Route>
 );

@@ -137,7 +137,7 @@ const UpdatePage = () => {
         opened={opened}
         onClose={() => {
           setOpened(false);
-          navigate("/");
+          navigate("/sell");
         }}
         centered
         withCloseButton={false}
@@ -626,7 +626,7 @@ const UpdatePage = () => {
                   height: "40px",
                 }}
                 radius="xl"
-                onClick={() => navigate("/")}
+                onClick={() => navigate("/sell")}
               >
                 Cancel
               </Button>

@@ -132,9 +132,10 @@ export const Header = () => {
   const isMedium = useMediaQuery("(min-width: 768px) and (max-width: 1023px)");
 
   const routeTitleMap: Record<string, string> = {
-    "/": "My Products",
-    "/add-new": "New Product",
-    "/product/:id": "My Product",
+    "/sell": "My Products",
+    "/sell/add-new": "New Product",
+    "/sell/product/:id": "My Product",
+    "/sell/update-product/:id": "Update Product",
     "/purchase": "Marketplace",
     "/purchase/product/:id": "Marketplace",
     "/purchase/product/:id/checkout": "Marketplace",
