@@ -99,7 +99,20 @@ export const Sidebar = ({ route }: SidebarProps) => {
           <ul className="space-y-2">
             {menuItems.map((item, index) => {
               const Icon = item.icon;
-              const isActive = item.url && location.pathname === item.url;
+
+              // for sell routes, isActive is buggy
+              const isActive =
+                item.label === "Marketplace"
+                  ? (route === "purchase" &&
+                      location.pathname.startsWith("/purchase")) ||
+                    (route === "sell" &&
+                      (location.pathname === "/sell/add-new" ||
+                        /^\/sell\/product(\/.*)?$/.test(location.pathname)
+ ||
+                        /^\/sell\/update-product\/[^/]+$/.test(
+                          location.pathname
+                        )))
+                  : location.pathname === item.url;
 
               const itemClasses = `group flex items-center gap-3 px-3 py-2 transition-all font-medium text-[14px] leading-[100%] tracking-[0%] font-[Montserrat] hover:text-white ${
                 isActive
@@ -128,29 +141,29 @@ export const Sidebar = ({ route }: SidebarProps) => {
                       {item.children.map((child: MenuChild, idx: number) => {
                         const ChildIcon = child.icon;
                         const isChildActive = location.pathname === child.url;
-                        
+
                         return (
                           <>
-                          <li key={idx}>
-                            <Link
-                              to={child.url}
-                              className={`flex items-center gap-2 px-3 py-1 text-[14px] font-[Montserrat] font-medium transition-colors ${
-                                isChildActive
-                                  ? "text-[#0F783B] font-semibold"
-                                  : "text-[#414141] hover:text-[#0F783B]"
-                              }`}
-                            >
-                              <ChildIcon 
-                                className={`w-4 h-4 ml-2 ${
-                                  isChildActive 
-                                    ? "text-[#0F783B]" 
-                                    : "text-[#BE8B45]"
-                                }`} 
-                              />
-                              <span>{child.label}</span>
-                            </Link>
-                          </li>
-                          <div className="ml-4 mt-2 w-[176px] h-[1px] rounded-[2px] bg-[#BFE1C8]" />
+                            <li key={idx}>
+                              <Link
+                                to={child.url}
+                                className={`flex items-center gap-2 px-3 py-1 text-[14px] font-[Montserrat] font-medium transition-colors ${
+                                  isChildActive
+                                    ? "text-[#0F783B] font-semibold"
+                                    : "text-[#414141] hover:text-[#0F783B]"
+                                }`}
+                              >
+                                <ChildIcon
+                                  className={`w-4 h-4 ml-2 ${
+                                    isChildActive
+                                      ? "text-[#0F783B]"
+                                      : "text-[#BE8B45]"
+                                  }`}
+                                />
+                                <span>{child.label}</span>
+                              </Link>
+                            </li>
+                            <div className="ml-4 mt-2 w-[176px] h-[1px] rounded-[2px] bg-[#BFE1C8]" />
                           </>
                         );
                       })}
