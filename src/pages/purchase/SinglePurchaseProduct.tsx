@@ -1,6 +1,5 @@
 import { Button, Container, Image, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
-// import f5 from "../../assets/f5.png";
 import { AiOutlineClose } from "react-icons/ai";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -8,10 +7,19 @@ import {
   updateProductCartStatus,
 } from "../../store/purchaseProductSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../../store/cartSlice";
+import { 
+  addToCart, 
+  removeProductFromCart,
+  incrementQuantity,
+  decrementQuantity,
+  selectCartItemByProductId,
+  selectCartTotalItems,
+  selectCartTotalAmount,
+  selectIsProductInCart,
+  formatPrice
+} from "../../store/cartSlice";
 import type { PurchaseProduct } from "../../types";
 import type { RootState } from "../../store";
-import { removeProductFromCart } from "../../store/cartSlice";
 
 const SinglePurchaseProduct = () => {
   const { productId } = useParams();
@@ -19,26 +27,34 @@ const SinglePurchaseProduct = () => {
 
   console.log("Product ID:", productIdNumber);
 
-  const [quantity, setQuantity] = useState(1);
-  const [product, setProduct] = useState<PurchaseProduct | undefined>(
-    undefined
-  );
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
+  const [product, setProduct] = useState<PurchaseProduct | undefined>(undefined);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
+  // Redux selectors
   const pdt = useSelector((state: RootState) =>
     selectProductById(state, productIdNumber)
   );
+  
+  const cartItem = useSelector((state: RootState) =>
+    selectCartItemByProductId(state, productIdNumber)
+  );
+  
+  const isProductInCart = useSelector((state: RootState) =>
+    selectIsProductInCart(state, productIdNumber)
+  );
+  
+  const totalCartItems = useSelector(selectCartTotalItems);
+  const totalCartAmount = useSelector(selectCartTotalAmount);
 
   useEffect(() => {
     setProduct(pdt);
     console.log("PRODUCT NAME: ", pdt?.name);
   }, [pdt]);
 
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const navigate = useNavigate();
-  const [count, setCount] = useState(1);
-  const dispatch = useDispatch();
+  // Get current quantity from cart or default to 1
+  const currentQuantity = cartItem?.quantity || 1;
 
   const handleCheckout = () => {
     navigate(`/purchase/product/${productId}/checkout`);
@@ -47,34 +63,42 @@ const SinglePurchaseProduct = () => {
   const handleAddToCart = () => {
     console.log("Entered add to cart");
 
-    const updatedProduct = { ...product, addToCart: true };
+    if (!pdt) return;
 
-    // just changes addToCart boolean to true and does nothing else ...
+    const updatedProduct = { ...pdt, addToCart: true };
+
+    // Update product cart status
     dispatch(
       updateProductCartStatus({ productId: productIdNumber, addToCart: true })
     );
 
-    dispatch(addToCart({ product: updatedProduct, quantity: count }));
+    // Add to cart with current quantity
+    dispatch(addToCart({ product: updatedProduct, quantity: currentQuantity }));
 
     console.log(
       `Added product`,
       updatedProduct,
-      `to cart with quantity ${count}`
+      `to cart with quantity ${currentQuantity}`
     );
 
     setIsCartOpen(true);
   };
 
   const handleIncrement = () => {
-    const newCount = count + 1;
-    setCount(newCount);
-    setQuantity(newCount);
+    if (!isProductInCart) {
+      // If product is not in cart, we need to add it first
+      handleAddToCart();
+    } else {
+      // If product is already in cart, increment its quantity
+      dispatch(incrementQuantity(productIdNumber));
+    }
   };
 
   const handleDecrement = () => {
-    const newCount = Math.max(1, count - 1);
-    setCount(newCount);
-    setQuantity(newCount);
+    if (isProductInCart && cartItem) {
+      // Only decrement if product is in cart
+      dispatch(decrementQuantity(productIdNumber));
+    }
   };
 
   const handleRemove = (productIdNumber: number) => {
@@ -83,7 +107,10 @@ const SinglePurchaseProduct = () => {
     );
     dispatch(removeProductFromCart(productIdNumber));
     setIsCartOpen(false);
-  }
+  };
+
+  // Calculate display price based on current quantity
+  const displayPrice = pdt ? Number(pdt.price) * currentQuantity : 0;
 
   return (
     <Container size="lg" py="xl" className="mt-[-25px]">
@@ -165,7 +192,7 @@ const SinglePurchaseProduct = () => {
             }}
             size="lg"
           >
-            PKR {pdt?.price * count}{" "}
+            {formatPrice(displayPrice)}{" "}
             <Text
               span
               fw={700}
@@ -173,7 +200,7 @@ const SinglePurchaseProduct = () => {
               size="sm"
               c="#646464"
             >
-              ({count} bag)
+              ({currentQuantity} bag{currentQuantity !== 1 ? 's' : ''})
             </Text>
           </Text>
 
@@ -198,37 +225,6 @@ const SinglePurchaseProduct = () => {
             </Text>
           </Text>
 
-          {/* Rating and Reviews */}
-          {/* {pdt?.rating && pdt?.reviews && (
-            <div
-              style={{
-                marginBottom: "15px",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-              }}
-            >
-              <Text
-                style={{
-                  fontFamily: "Montserrat",
-                  fontSize: "14px",
-                  color: "#FFB800",
-                }}
-              >
-                ★ {pdt?.rating}
-              </Text>
-              <Text
-                style={{
-                  fontFamily: "Montserrat",
-                  fontSize: "14px",
-                  color: "#646464",
-                }}
-              >
-                ({pdt?.reviews} reviews)
-              </Text>
-            </div>
-          )} */}
-
           <div style={{ marginBottom: "20px" }}>
             <div
               style={{
@@ -246,6 +242,7 @@ const SinglePurchaseProduct = () => {
             >
               <button
                 onClick={handleDecrement}
+                disabled={!isProductInCart || currentQuantity <= 1}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -254,14 +251,15 @@ const SinglePurchaseProduct = () => {
                   height: "30px",
                   backgroundColor: "transparent",
                   border: "none",
-                  cursor: "pointer",
+                  cursor: (!isProductInCart || currentQuantity <= 1) ? "not-allowed" : "pointer",
                   fontSize: "18px",
                   fontWeight: "bold",
-                  color: "#686868",
+                  color: (!isProductInCart || currentQuantity <= 1) ? "#CCCCCC" : "#686868",
                   borderRadius: "50%",
                   lineHeight: "1",
                   padding: "0",
                   margin: "0",
+                  opacity: (!isProductInCart || currentQuantity <= 1) ? 0.5 : 1,
                 }}
                 aria-label="Decrease quantity"
               >
@@ -282,11 +280,12 @@ const SinglePurchaseProduct = () => {
                   lineHeight: "1",
                 }}
               >
-                {count}
+                {currentQuantity}
               </span>
 
               <button
                 onClick={handleIncrement}
+                disabled={!pdt?.inStock}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -295,14 +294,15 @@ const SinglePurchaseProduct = () => {
                   height: "30px",
                   backgroundColor: "transparent",
                   border: "none",
-                  cursor: "pointer",
+                  cursor: !pdt?.inStock ? "not-allowed" : "pointer",
                   fontSize: "18px",
                   fontWeight: "bold",
-                  color: "#686868",
+                  color: !pdt?.inStock ? "#CCCCCC" : "#686868",
                   borderRadius: "50%",
                   lineHeight: "1",
                   padding: "0",
                   margin: "0",
+                  opacity: !pdt?.inStock ? 0.5 : 1,
                 }}
                 aria-label="Increase quantity"
               >
@@ -310,24 +310,48 @@ const SinglePurchaseProduct = () => {
               </button>
             </div>
 
-            {/* Add to Cart Button */}
-            <Button
-              onClick={handleAddToCart}
-              disabled={!pdt?.inStock}
-              style={{
-                border: "1px solid #0F783B1A",
-                borderRadius: "100px",
-                width: "175px",
-                height: "40px",
-                backgroundColor: pdt?.inStock ? "#0F783B" : "#CCCCCC",
-                fontFamily: "Montserrat",
-                fontWeight: 600,
-                fontSize: "12px",
-                cursor: pdt?.inStock ? "pointer" : "not-allowed",
-              }}
-            >
-              + Add to Cart
-            </Button>
+            {/* Add to Cart Button - Only show if not in cart */}
+            {!isProductInCart && (
+              <Button
+                onClick={handleAddToCart}
+                disabled={!pdt?.inStock}
+                style={{
+                  border: "1px solid #0F783B1A",
+                  borderRadius: "100px",
+                  width: "175px",
+                  height: "40px",
+                  backgroundColor: pdt?.inStock ? "#0F783B" : "#CCCCCC",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  cursor: pdt?.inStock ? "pointer" : "not-allowed",
+                }}
+              >
+                + Add to Cart
+              </Button>
+            )}
+            
+            {/* Already in Cart indicator */}
+            {isProductInCart && (
+              <div
+                style={{
+                  border: "1px solid #0F783B",
+                  borderRadius: "100px",
+                  width: "175px",
+                  height: "40px",
+                  backgroundColor: "transparent",
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  fontSize: "12px",
+                  color: "#0F783B",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✓ In Cart
+              </div>
+            )}
           </div>
 
           <div style={{ marginBottom: "20px" }}>
@@ -500,7 +524,7 @@ const SinglePurchaseProduct = () => {
                 color: "#0F783B",
               }}
             >
-              Cart (1)
+              Cart ({totalCartItems})
             </div>
             <button
               onClick={() => setIsCartOpen(false)}
@@ -518,10 +542,11 @@ const SinglePurchaseProduct = () => {
           </div>
 
           <div
+          className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-hide"
             style={{
               flex: 1,
               overflowY: "auto",
-              padding: "0 24px 24px 24px", // Add padding to scrollable content
+              padding: "0 24px 24px 24px",
             }}
           >
             {/* Product Label */}
@@ -624,7 +649,7 @@ const SinglePurchaseProduct = () => {
                     color: "#0F783B",
                   }}
                 >
-                  PKR{" "}{pdt?.price * count}{" "}
+                  {formatPrice(displayPrice)}{" "}
                 </span>
                 <span
                   style={{
@@ -636,7 +661,7 @@ const SinglePurchaseProduct = () => {
                     color: "#646464",
                   }}
                 >
-                  ({count} bag)
+                  ({currentQuantity} bag{currentQuantity !== 1 ? 's' : ''})
                 </span>
               </div>
 
@@ -661,19 +686,6 @@ const SinglePurchaseProduct = () => {
                     gap: "12px",
                   }}
                 >
-                  {/* <button
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#686868",
-                      fontSize: "20px",
-                      cursor: "pointer",
-                      padding: "0",
-                      lineHeight: "1",
-                    }}
-                  >
-                    -
-                  </button> */}
                   <span
                     style={{
                       fontFamily: "Montserrat",
@@ -684,26 +696,13 @@ const SinglePurchaseProduct = () => {
                       textAlign: "center",
                     }}
                   >
-                    {count}
+                    {currentQuantity}
                   </span>
-                  {/* <button
-                    style={{
-                      background: "transparent",
-                      border: "none",
-                      color: "#686868",
-                      fontSize: "20px",
-                      cursor: "pointer",
-                      padding: "0",
-                      lineHeight: "1",
-                    }}
-                  >
-                    +
-                  </button> */}
                 </div>
 
                 {/* Remove Button */}
                 <button
-                onClick={() => handleRemove(productIdNumber)}
+                  onClick={() => handleRemove(productIdNumber)}
                   style={{
                     background: "transparent",
                     border: "none",
@@ -765,7 +764,7 @@ const SinglePurchaseProduct = () => {
                     color: "#000000",
                   }}
                 >
-                  {pdt?.price * count}
+                  {formatPrice(cartItem?.totalPrice || displayPrice)}
                 </span>
               </div>
 
@@ -801,7 +800,7 @@ const SinglePurchaseProduct = () => {
                     textAlign: "center",
                   }}
                 >
-                  {pdt?.price * count}
+                  {formatPrice(totalCartAmount)}
                 </span>
               </div>
             </div>

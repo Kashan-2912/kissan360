@@ -1,3 +1,5 @@
+// carousel left right functionality...
+
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Plus, Star } from "lucide-react";
@@ -304,54 +306,64 @@ export default function AgriculturalProductsUI() {
 
   const GridCard = ({ product }: { product: any }) => (
     <div
-      className="group relative w-[210px] h-[250px] rounded-2xl bg-white p-4 flex flex-col"
+      className="group relative w-[184px] h-[219px] rounded-2xl bg-white p-3 flex flex-col"
       style={{ boxShadow: "0px 10px 10px 0px rgba(0, 0, 0, 0.1)" }}
     >
       <EyeIcon />
 
       {/* Product Image */}
-      <div className="flex-1 flex items-center justify-center mb-4 mt-6">
+      <div className="flex-1 flex items-center justify-center mb-5">
         <img
-          src={product.image || "/placeholder.svg?height=80&width=80"}
+          src={product.image || "/placeholder.svg?height=60&width=60"}
           alt={product.name}
-          className="w-20 h-20 object-contain"
+          className="w-[75px] h-[75px] object-contain"
         />
       </div>
 
       {/* Product Info */}
-      <div className="text-center mb-3">
-        <h3 className="text-black font-semibold text-[16px] font-['Montserrat'] mb-2">
+      <div className="text-center mb-6">
+        <h3 className="text-black font-semibold text-[16px] font-['Montserrat'] leading-[100%] flex items-center justify-center">
           {product.name}
         </h3>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-3 flex items-center justify-between">
         {/* Price */}
-        <p className="text-[#0F783B] font-bold text-sm font-['Montserrat'] mb-1">
-          PKR {product.price}/L
-        </p>
 
-        {/* Stars + Reviews */}
-        {product.rating && (
-          <div className="flex items-center gap-1">
-            <div className="flex items-center">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  size={14}
-                  className={
-                    star <= product.rating
-                      ? "text-[#FFD600] fill-[#FFD600]"
-                      : "text-[#DBDCDD] fill-[#DBDCDD]"
-                  }
-                />
-              ))}
+        <div className="flex flex-col items-start">
+          <p className="text-[#0F783B] font-bold text-[14px] font-['Montserrat'] text-left">
+            PKR {product.price}/L
+          </p>
+
+          {/* Stars + Reviews */}
+          {product.rating && (
+            <div className="flex items-center justify-left gap-1">
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    size={12}
+                    className={
+                      star <= product.rating
+                        ? "text-[#FFD600] fill-[#FFD600]"
+                        : "text-[#DBDCDD] fill-[#DBDCDD]"
+                    }
+                  />
+                ))}
+              </div>
+              <span className="text-[#7B7B7B] text-[11px] font-[Poppins]">
+                ({product.reviews || 0})
+              </span>
             </div>
-            <span className="text-[#7B7B7B] text-[13px] font-[Poppins]">
-              ({product.reviews || 0})
-            </span>
-          </div>
-        )}
+          )}
+        </div>
+
+        <div
+          className="absolute bottom-4 right-4 w-[32px] h-[32px] rounded-full bg-gradient-to-r from-[#13783C] to-[#38BE17] flex items-center justify-center cursor-pointer"
+          // onClick={() => handleAddToCart(product.id)}
+        >
+          <Plus size={14} className="text-white font-bold" />
+        </div>
       </div>
 
       {/* Stock Status Indicator */}
@@ -361,18 +373,10 @@ export default function AgriculturalProductsUI() {
         </div>
       )}
 
-      {/* Plus icon */}
-      <div
-        className="absolute bottom-3 right-2 w-[40px] h-[40px] rounded-full bg-gradient-to-r from-[#13783C] to-[#38BE17] flex items-center justify-center cursor-pointer"
-        // onClick={() => handleAddToCart(product.id)}
-      >
-        <Plus size={16} className="text-white font-bold" />
-      </div>
-
       {/* Hover Overlay */}
       <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 absolute inset-0 rounded-2xl flex items-center justify-center z-10">
         <div className="absolute inset-0 bg-gradient-to-r from-[#13783C] to-[#38BE17] opacity-70 rounded-2xl"></div>
-        <div className="text-white text-center flex items-center justify-center bg-[#BE8B45] w-[110px] h-[34px] rounded-[16px] gap-[10px] font-semibold font-[Montserrat] text-[14px] z-20">
+        <div className="text-white text-center flex items-center justify-center bg-[#BE8B45] w-[100px] h-[30px] rounded-[16px] gap-[8px] font-semibold font-[Montserrat] text-[12px] z-20">
           <button
             onClick={() => handleNavigate(product.id)}
             className="cursor-pointer"
@@ -469,11 +473,9 @@ export default function AgriculturalProductsUI() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8 px-4 mb-12">
+        <div className="flex flex-wrap justify-center gap-8 px-4 mb-12">
           {displayGridProducts.map((product) => (
-            <div className="w-full flex justify-center" key={product.id}>
-              <GridCard product={product} />
-            </div>
+            <GridCard key={product.id} product={product} />
           ))}
         </div>
 

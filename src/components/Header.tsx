@@ -7,7 +7,7 @@ import { LuSearch, LuSettings, LuArrowLeft } from "react-icons/lu";
 import { useMediaQuery } from "@mantine/hooks";
 import { useState, useRef, useEffect } from "react";
 import Logo from "../assets/Logo2.png";
-import msg from "../assets/not_found.png"
+import msg from "../assets/not_found.png";
 
 // Mock notification data - replace with your actual data
 const mockNotifications = [
@@ -17,7 +17,7 @@ const mockNotifications = [
     title: "You have a new Order.",
     description: "100kg wheat order by Basit Ali",
     date: "March 10, 2024",
-    time: "12:15 am"
+    time: "12:15 am",
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const mockNotifications = [
     title: "You have received Payment From Ali ...",
     description: "Amount: 35000 PKR",
     date: "March 10, 2024",
-    time: "11:15 am"
+    time: "11:15 am",
   },
   {
     id: 3,
@@ -33,7 +33,7 @@ const mockNotifications = [
     title: "Your Request of wheat (ID# 10298) Has been...",
     description: "The request of wheat Product has been approved",
     date: "March 10, 2024",
-    time: "10:15 am"
+    time: "10:15 am",
   },
   {
     id: 4,
@@ -41,7 +41,7 @@ const mockNotifications = [
     title: "Your Wheat stock has dropped below 25 kg",
     description: "Increase you most sold product",
     date: "March 10, 2024",
-    time: "09:15 am"
+    time: "09:15 am",
   },
   {
     id: 5,
@@ -49,7 +49,7 @@ const mockNotifications = [
     title: "Your Request for Rice (ID# 10298) Has been...",
     description: "The request of wheat Product has been rejected",
     date: "March 10, 2024",
-    time: "10:15 am"
+    time: "10:15 am",
   },
   {
     id: 6,
@@ -57,12 +57,12 @@ const mockNotifications = [
     title: "Additional notification",
     description: "This would trigger Show All",
     date: "March 10, 2024",
-    time: "08:15 am"
-  }
+    time: "08:15 am",
+  },
 ];
 
 interface NotificationItemProps {
-  notification: typeof mockNotifications[0];
+  notification: (typeof mockNotifications)[0];
 }
 
 const NotificationItem = ({ notification }: NotificationItemProps) => (
@@ -74,37 +74,37 @@ const NotificationItem = ({ notification }: NotificationItemProps) => (
         alt="notification"
         className="w-[25px] h-[25px] rounded-full object-cover flex-shrink-0 border border-[#BE8B45]"
       />
-      
+
       {/* Main content div */}
       <div className="flex-1 ml-2 min-w-0">
         <div className="flex justify-between items-center">
           {/* Left div - Title and Description */}
           <div className="flex flex-col justify-center flex-1 min-w-0 pr-2">
-            <div 
+            <div
               className="font-[Montserrat] font-medium text-[9px] leading-[100%] text-[#000000] break-words"
-              style={{ letterSpacing: '0%' }}
+              style={{ letterSpacing: "0%" }}
             >
               {notification.title}
             </div>
-            <div 
+            <div
               className="font-[Montserrat] font-normal text-[9px] leading-[100%] text-[#8E8E8E] break-words mt-2"
-              style={{ letterSpacing: '0%' }}
+              style={{ letterSpacing: "0%" }}
             >
               {notification.description}
             </div>
           </div>
-          
+
           {/* Right div - Date and Time */}
           <div className="flex flex-col justify-center items-end flex-shrink-0">
-            <div 
+            <div
               className="font-[Montserrat] font-medium text-[9px] leading-[100%] text-[#2F2F2F] whitespace-nowrap"
-              style={{ letterSpacing: '0%' }}
+              style={{ letterSpacing: "0%" }}
             >
               {notification.date}
             </div>
-            <div 
+            <div
               className="font-[Montserrat] font-normal text-[9px] leading-[100%] text-[#8E8E8E] whitespace-nowrap mt-2"
-              style={{ letterSpacing: '0%' }}
+              style={{ letterSpacing: "0%" }}
             >
               {notification.time}
             </div>
@@ -112,10 +112,10 @@ const NotificationItem = ({ notification }: NotificationItemProps) => (
         </div>
       </div>
     </div>
-    <div 
+    <div
       className="w-full h-[1px] bg-[#0F783B] opacity-20 rounded-[4px] mx-auto"
-      style={{ 
-        boxShadow: '0px 2px 10px 0px #00000014'
+      style={{
+        boxShadow: "0px 2px 10px 0px #00000014",
       }}
     />
   </>
@@ -187,29 +187,29 @@ export const Header = () => {
     };
 
     if (showNotifications) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showNotifications]);
 
-  const displayedNotifications = showAllNotifications ? mockNotifications : mockNotifications.slice(0, 5);
-  const hasMoreNotifications = mockNotifications.length > 5 && !showAllNotifications;
+  const displayedNotifications = showAllNotifications
+    ? mockNotifications
+    : mockNotifications.slice(0, 5);
+  const hasMoreNotifications =
+    mockNotifications.length > 5 && !showAllNotifications;
 
   return (
     <header className="px-6 py-5 relative">
       {/* Desktop / Tablet */}
-      <div className="md:flex md:items-center md:justify-between hidden">
-        {/* Left Section - User Info */}
-        <div className="w-[254px] h-[42px] flex items-center gap-4">
+      <div className="hidden md:flex items-center justify-between w-full">
+        {/* Left Section - User Info - Fixed width */}
+        <div className="flex items-center gap-4 min-w-0 w-[33.33%]">
           {/* Bell Icon */}
-          <div 
-            ref={bellRef}
-            className="relative"
-          >
-            <div 
+          <div ref={bellRef} className="relative">
+            <div
               className="w-[40px] h-[40px] border bg-[#FFFFFF] border-[#0F783B6B] rounded-full flex items-center justify-center relative cursor-pointer"
               onClick={handleBellClick}
             >
@@ -219,53 +219,59 @@ export const Header = () => {
 
             {/* Notifications Modal */}
             {showNotifications && (
-              <div 
+              <div
                 className="absolute top-[45px] left-0 w-[320px] h-[340px] bg-white rounded-[4px] z-50 overflow-hidden"
                 style={{
-                  border: '2px solid #FFFFFF',
-                  boxShadow: '0px 4px 10px 0px #0000001A'
+                  border: "2px solid #FFFFFF",
+                  boxShadow: "0px 4px 10px 0px #0000001A",
                 }}
               >
                 {/* Modal Header */}
-                <div 
+                <div
                   className="w-full h-[26px] bg-[#F8F7EF] flex items-center justify-between px-3 rounded-t-[4px] flex-shrink-0"
                   style={{
-                    boxShadow: '0px 2px 10px 0px #00000014'
+                    boxShadow: "0px 2px 10px 0px #00000014",
                   }}
                 >
-                  <span 
+                  <span
                     className="font-[Montserrat] font-bold text-[10px] leading-[100%] text-[#0F783B]"
-                    style={{ letterSpacing: '0%' }}
+                    style={{ letterSpacing: "0%" }}
                   >
                     Notifications
                   </span>
-                  <span 
+                  <span
                     className="font-[Montserrat] font-semibold text-[8px] leading-[100%] text-[#000000] cursor-pointer"
-                    style={{ letterSpacing: '0%' }}
+                    style={{ letterSpacing: "0%" }}
                   >
                     Mark all Read
                   </span>
                 </div>
 
                 {/* Notifications List */}
-                <div className="overflow-y-auto scrollbar-hide overflow-x-hidden" style={{ height: 'calc(292px - 2px)' }}>
+                <div
+                  className="overflow-y-auto scrollbar-hide overflow-x-hidden"
+                  style={{ height: "calc(292px - 2px)" }}
+                >
                   {displayedNotifications.map((notification) => (
-                    <NotificationItem key={notification.id} notification={notification} />
+                    <NotificationItem
+                      key={notification.id}
+                      notification={notification}
+                    />
                   ))}
                 </div>
 
                 {/* Show All Button */}
                 {hasMoreNotifications && (
-                  <div 
+                  <div
                     className="w-full h-[26px] bg-[#F8F7EF] flex items-center justify-center cursor-pointer rounded-b-[4px] flex-shrink-0"
                     style={{
-                      boxShadow: '0px 2px 10px 0px #00000014'
+                      boxShadow: "0px 2px 10px 0px #00000014",
                     }}
                     onClick={handleShowAll}
                   >
-                    <span 
+                    <span
                       className="font-[Montserrat] font-semibold text-[8px] leading-[100%] text-[#000000]"
-                      style={{ letterSpacing: '0%' }}
+                      style={{ letterSpacing: "0%" }}
                     >
                       Show All
                     </span>
@@ -292,11 +298,15 @@ export const Header = () => {
           </div>
         </div>
 
-        <h1 className="text-black font-[Montserrat] font-bold text-[24px] md:text-[18px] lg:text-[24px] my-auto">
-          {pageTitle}
-        </h1>
+        {/* Center Section - Page Title - Fixed position */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
+          <h1 className="text-black font-[Montserrat] font-bold text-[24px] md:text-[18px] lg:text-[24px] my-auto">
+            {pageTitle}
+          </h1>
+        </div>
 
-        <div className="flex items-center gap-3">
+        {/* Right Section - Fixed width */}
+        <div className="flex items-center justify-end gap-3 min-w-0 w-[33.33%]">
           {location.pathname === "/" && (
             <button
               onClick={handleClick}
