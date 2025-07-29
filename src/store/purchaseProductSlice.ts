@@ -87,7 +87,7 @@ const purchaseProductSlice = createSlice({
           reviews: 12,
           price: "1200",
           image: f1,
-          description: "Product with ID 1",
+          description: "Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1Product with ID 1",
         },
         {
           id: 2,
@@ -99,7 +99,7 @@ const purchaseProductSlice = createSlice({
           reviews: 8,
           price: "800",
           image: f2,
-          description: "Product with ID 2",
+          description: "Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2vvProduct with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2",
         },
         // Add more as needed
       ];
