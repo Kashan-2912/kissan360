@@ -14,6 +14,7 @@ import Logo from "../assets/Logo2.png";
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { Modal, Center } from "@mantine/core";
+import React from "react";
 
 // Define types for menu items
 interface MenuChild {
@@ -142,8 +143,8 @@ export const Sidebar = ({ route }: SidebarProps) => {
                         const isChildActive = location.pathname === child.url;
 
                         return (
-                          <>
-                            <li key={idx}>
+                          <React.Fragment key={idx}>
+                            <li>
                               <Link
                                 to={child.url}
                                 className={`flex items-center gap-2 px-3 py-1 text-[14px] font-[Montserrat] font-medium transition-colors ${
@@ -163,7 +164,7 @@ export const Sidebar = ({ route }: SidebarProps) => {
                               </Link>
                             </li>
                             <div className="ml-4 mt-2 w-[176px] h-[1px] rounded-[2px] bg-[#BFE1C8]" />
-                          </>
+                          </React.Fragment>
                         );
                       })}
                     </ul>
