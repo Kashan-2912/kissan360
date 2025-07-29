@@ -1,3 +1,5 @@
+// responsiveness remaining
+
 import { Button, Container, Image, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
