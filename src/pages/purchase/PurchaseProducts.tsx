@@ -1,8 +1,8 @@
-// carousel left right functionality...
+import { Carousel } from "@mantine/carousel";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Plus, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Star } from "lucide-react";
 import { AiFillEye } from "react-icons/ai";
 import { FaArrowRight } from "react-icons/fa";
 import { Tooltip } from "@mantine/core";
@@ -76,6 +76,24 @@ const fallbackCarouselProducts = [
     inStock: true,
     category: "Fertilizers" as const,
     description: "Premium Urea fertilizer",
+  },
+  {
+    id: 6,
+    name: "Khaad",
+    price: "1900",
+    image: f2,
+    inStock: true,
+    category: "Fertilizers" as const,
+    description: "Urea fertilizer",
+  },
+  {
+    id: 7,
+    name: "Urea",
+    price: "1200",
+    image: f5,
+    inStock: false,
+    category: "Fertilizers" as const,
+    description: "Premium DAP fertilizer",
   },
 ];
 
@@ -199,17 +217,14 @@ export default function AgriculturalProductsUI() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // Redux selectors
+  // Add carousel ref for custom navigation
+  const [embla, setEmbla] = useState<any>(null);
 
+  // Redux selectors
   const allProducts = useSelector(selectAllPurchaseProducts);
 
   // will only display if backend call is made (for dumy, its working)
   console.log(allProducts);
-
-  // const carouselProducts = useSelector(selectCarouselProducts);
-  // const filteredProducts = useSelector((state: any) =>
-  //   selectProductsByCategoryWithAll(state, activeCategory)
-  // );
 
   const loading = useSelector(selectPurchaseProductsLoading);
   const error = useSelector(selectPurchaseProductsError);
@@ -218,15 +233,15 @@ export default function AgriculturalProductsUI() {
     // Temporarily disable API call until backend is ready
     // dispatch(fetchPurchaseProducts() as any);
 
-    // adding dummy products jsut for skae of testing:
+    // adding dummy products just for sake of testing:
     dispatch(addDummyProducts());
 
     console.log("API call disabled - using fallback data");
   }, [dispatch]);
 
   // Use fallback data since API is not ready
-
-  const displayCarouselProducts = fallbackCarouselProducts.slice(0, 3);
+  // Display only first 5 products in carousel
+  // const displayCarouselProducts = fallbackCarouselProducts.slice(0, 5);
   const displayGridProducts = fallbackGridProducts.filter(
     (product) => activeCategory === "All" || product.category === activeCategory
   );
@@ -235,17 +250,14 @@ export default function AgriculturalProductsUI() {
     navigate(`/purchase/product/${productId}`);
   };
 
-  // ---> no need for redux add to cart here, cuz we have add to cart on next page as well...
+  // Custom navigation functions
+  const scrollPrev = useCallback(() => {
+    if (embla) embla.scrollPrev();
+  }, [embla]);
 
-  // const handleAddToCart = (productId: number) => {
-  //
-  //   console.log("Entered add to cart")
-  //   dispatch(updateProductCartStatus({ productId, addToCart: true }));
-
-  //   dispatch(addToCart({ productId, quantity: 1 }));
-
-  //   console.log(`Added product ${productId} to cart`);
-  // };
+  const scrollNext = useCallback(() => {
+    if (embla) embla.scrollNext();
+  }, [embla]);
 
   const CarouselCard = ({ product }: { product: any }) => (
     <div
@@ -420,6 +432,25 @@ export default function AgriculturalProductsUI() {
     );
   }
 
+  const NavigationArrow = ({
+    direction,
+    onClick,
+  }: {
+    direction: "left" | "right";
+    onClick: () => void;
+  }) => (
+    <button
+      onClick={onClick}
+      className="w-10 h-10 rounded-full border border-[#0F783B] bg-white flex items-center justify-center transition-colors hover:bg-gray-50"
+    >
+      {direction === "left" ? (
+        <ChevronLeft size={20} className="text-[#0F783B]" />
+      ) : (
+        <ChevronRight size={20} className="text-[#0F783B]" />
+      )}
+    </button>
+  );
+
   return (
     <div className="min-h-screen py-8 mt-[-40px] overflow-x-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -432,15 +463,33 @@ export default function AgriculturalProductsUI() {
 
         {/* Carousel Section */}
         <div className="mb-12">
-          <div className="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 mb-8">
-            {displayCarouselProducts.map((product) => (
-              <div
-                key={product.id}
-                className="flex justify-center w-full sm:w-auto"
+          <div className="mb-4">
+            <div className="max-w-full">
+              <Carousel
+                getEmblaApi={setEmbla}
+                height={240}
+                type="container"
+                slideSize={{ '300px': '100%', '480px': '50%', '560px': '20%' }}
+                slideGap={{base: 10}}
+                emblaOptions={{ loop: false, align: "start" }}
+                withControls={false}
+                withIndicators={false}
               >
-                <CarouselCard product={product} />
-              </div>
-            ))}
+                {fallbackCarouselProducts.map((product) => (
+                  <Carousel.Slide key={product.id}>
+                    <div className="flex justify-center px-2">
+                      <CarouselCard product={product} />
+                    </div>
+                  </Carousel.Slide>
+                ))}
+              </Carousel>
+            </div>
+          </div>
+
+          {/* Custom Navigation Arrows */}
+          <div className="flex flex-row sm:flex-row items-center justify-center gap-5">
+            <NavigationArrow direction="left" onClick={scrollPrev} />
+            <NavigationArrow direction="right" onClick={scrollNext} />
           </div>
         </div>
 
@@ -450,7 +499,8 @@ export default function AgriculturalProductsUI() {
             className="w-max rounded-[27px] border border-[#F6F6F6] bg-white p-2"
             style={{ boxShadow: "0px 0px 20.3px 0px rgba(0, 0, 0, 0.05)" }}
           >
-            <div className="grid grid-cols-2 gap-2 sm:flex sm:gap-2 sm:overflow-x-auto sm:scrollbar-hide sm:justify-center">
+            <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2">
+
               {categories.map((category) => (
                 <button
                   key={category}

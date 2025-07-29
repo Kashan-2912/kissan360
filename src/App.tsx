@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { MantineProvider } from "@mantine/core";
 import { store } from "./store";
 import "@mantine/core/styles.css";
+import '@mantine/carousel/styles.css';
 
 import { SellRoutes } from "./routes/SellRoutes";
 import { PurchaseRoutes } from "./routes/PurchaseRoutes";

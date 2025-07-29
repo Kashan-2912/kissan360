@@ -288,14 +288,16 @@ export const Header = () => {
             alt="User avatar"
             className="w-[40px] h-[40px] object-cover rounded-full border border-[#BE8B45]"
           />
-          <div className="flex flex-col justify-center gap-[1px]">
-            <span className="w-[85px] h-[17px] font-[Montserrat] font-semibold text-[14px] md:text-[10px] lg:text-[14px] text-[#000000] leading-[100%]">
-              {user.name}
-            </span>
-            <span className="w-[125px] h-[17px] font-[Montserrat] font-normal text-[11px] md:text-[10px] lg:text-[11px] text-[#9D9999] leading-[17px]">
-              {user.email}
-            </span>
-          </div>
+          {!isMedium && (
+            <div className="flex flex-col justify-center gap-[1px]">
+              <span className="w-[85px] h-[17px] font-[Montserrat] font-semibold text-[14px] md:text-[10px] lg:text-[14px] text-[#000000] leading-[100%]">
+                {user.name}
+              </span>
+              <span className="w-[125px] h-[17px] font-[Montserrat] font-normal text-[11px] md:text-[10px] lg:text-[11px] text-[#9D9999] leading-[17px]">
+                {user.email}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Center Section - Page Title - Fixed position */}

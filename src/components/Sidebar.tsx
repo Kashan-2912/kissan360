@@ -107,8 +107,7 @@ export const Sidebar = ({ route }: SidebarProps) => {
                       location.pathname.startsWith("/purchase")) ||
                     (route === "sell" &&
                       (location.pathname === "/sell/add-new" ||
-                        /^\/sell\/product(\/.*)?$/.test(location.pathname)
- ||
+                        /^\/sell\/product(\/.*)?$/.test(location.pathname) ||
                         /^\/sell\/update-product\/[^/]+$/.test(
                           location.pathname
                         )))
