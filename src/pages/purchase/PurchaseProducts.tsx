@@ -239,9 +239,6 @@ export default function AgriculturalProductsUI() {
     console.log("API call disabled - using fallback data");
   }, [dispatch]);
 
-  // Use fallback data since API is not ready
-  // Display only first 5 products in carousel
-  // const displayCarouselProducts = fallbackCarouselProducts.slice(0, 5);
   const displayGridProducts = fallbackGridProducts.filter(
     (product) => activeCategory === "All" || product.category === activeCategory
   );
