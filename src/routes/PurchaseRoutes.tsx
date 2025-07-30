@@ -10,7 +10,7 @@ export const PurchaseRoutes = (
   <Route path="/purchase" element={<DashboardLayout />}>
     <Route index element={<PurchaseProducts />} />
     <Route path="/purchase/product/:productId" element={<SinglePurchaseProduct />} />
-    <Route path="/purchase/product/:productId/checkout" element={<CheckoutPage />} />
+    <Route path="/purchase/checkout" element={<CheckoutPage />} />
     <Route path="/purchase/history" element={<OrderHistory />} />
     <Route path="/purchase/order/1" element={<ViewOrderDetails />} />
   </Route>

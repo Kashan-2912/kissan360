@@ -66,12 +66,7 @@ const CartSidebar = ({setIsCartOpen} : {setIsCartOpen: React.Dispatch<React.SetS
   };
 
   const handleCheckout = () => {
-    if (isViewingAllCart) {
-      // Navigate to general checkout page or handle multiple products checkout
-      navigate(`/checkout`);
-    } else {
-      navigate(`/purchase/product/${productId}/checkout`);
-    }
+    navigate(`/purchase/checkout`);
   };
 
   // Calculate display price based on current quantity

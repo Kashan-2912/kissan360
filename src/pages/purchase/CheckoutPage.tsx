@@ -8,14 +8,19 @@ import { Modal, Center } from "@mantine/core";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import shippingSchema from "../../validation/shippingSchema";
+import { selectCartItemsCount, selectCartItems, selectCartTotalAmount } from "../../store/cartSlice";
+import { useSelector } from "react-redux";
 
 const CheckoutPage: React.FC = () => {
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const navigate = useNavigate();
 
+  const totalItems = useSelector(selectCartItemsCount);
+  const allCartItems = useSelector(selectCartItems);
+  const totalAmount = useSelector(selectCartTotalAmount);
+
   const formik = useFormik({
     initialValues: {
-
       // Contact Details
       name: "",
       email: "",
@@ -111,223 +116,225 @@ const CheckoutPage: React.FC = () => {
           </h2>
 
           <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                gap: "16px",
-                marginBottom: "16px",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontFamily: "Montserrat",
-                    fontWeight: "600",
-                    fontSize: "10px",
-                    lineHeight: "100%",
-                    letterSpacing: "0%",
-                    color: "#000000",
-                    display: "block",
-                    marginBottom: "4px",
-                  }}
-                >
-                  Name <span style={{ color: "red" }}>*</span>
-                </div>
-                <TextInput
-                  {...formik.getFieldProps("name")}
-                  placeholder="Basit Ali Khan"
-                  styles={{
-                    input: {
-                      width: "183px",
-                      height: "36px",
-                      borderRadius: "8px",
-                      border:
-                        formik.touched.name && formik.errors.name
-                          ? "1px solid red"
-                          : "1px solid #00000012",
-                      backgroundColor: "#F5F5F599",
-                      fontFamily: "Montserrat",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      color: "#0F783B",
-                      "&::placeholder": {
-                        fontFamily: "Montserrat",
-                        fontWeight: "600",
-                        fontSize: "12px",
-                        color: "#9D9999",
-                      },
-                    },
-                  }}
-                />
-                {formik.touched.name && formik.errors.name && (
-                  <div
-                    style={{
-                      color: "red",
-                      fontSize: "8px",
-                      fontFamily: "Montserrat",
-                      marginTop: "2px",
-                    }}
-                  >
-                    {formik.errors.name}
-                  </div>
-                )}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr 1fr",
+              gap: "16px",
+              marginBottom: "16px",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "600",
+                  fontSize: "10px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#000000",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
+                Name <span style={{ color: "red" }}>*</span>
               </div>
-
-              <div>
+              <TextInput
+                {...formik.getFieldProps("name")}
+                placeholder="Basit Ali Khan"
+                styles={{
+                  input: {
+                    width: "183px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    border:
+                      formik.touched.name && formik.errors.name
+                        ? "1px solid red"
+                        : "1px solid #00000012",
+                    backgroundColor: "#F5F5F599",
+                    fontFamily: "Montserrat",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    color: "#0F783B",
+                    "&::placeholder": {
+                      fontFamily: "Montserrat",
+                      fontWeight: "600",
+                      fontSize: "12px",
+                      color: "#9D9999",
+                    },
+                  },
+                }}
+              />
+              {formik.touched.name && formik.errors.name && (
                 <div
                   style={{
+                    color: "red",
+                    fontSize: "8px",
                     fontFamily: "Montserrat",
-                    fontWeight: "600",
-                    fontSize: "10px",
-                    lineHeight: "100%",
-                    letterSpacing: "0%",
-                    color: "#000000",
-                    display: "block",
-                    marginBottom: "4px",
+                    marginTop: "2px",
                   }}
                 >
-                  Email <span style={{ color: "red" }}>*</span>
+                  {formik.errors.name}
                 </div>
-                <TextInput
-                  {...formik.getFieldProps("email")}
-                  type="email"
-                  placeholder="basitali@gmail.com"
-                  styles={{
-                    input: {
-                      width: "183px",
-                      height: "36px",
-                      borderRadius: "8px",
-                      border:
-                        formik.touched.email && formik.errors.email
-                          ? "1px solid red"
-                          : "1px solid #00000012",
-                      backgroundColor: "#F5F5F599",
-                      fontFamily: "Montserrat",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      color: "#0F783B",
-                      "&::placeholder": {
-                        fontFamily: "Montserrat",
-                        fontWeight: "600",
-                        fontSize: "12px",
-                        color: "#9D9999",
-                      },
-                    },
-                  }}
-                />
-                {formik.touched.email && formik.errors.email && (
-                  <div
-                    style={{
-                      color: "red",
-                      fontSize: "8px",
-                      fontFamily: "Montserrat",
-                      marginTop: "2px",
-                    }}
-                  >
-                    {formik.errors.email}
-                  </div>
-                )}
+              )}
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "600",
+                  fontSize: "10px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#000000",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
+                Email <span style={{ color: "red" }}>*</span>
               </div>
-
-              <div>
+              <TextInput
+                {...formik.getFieldProps("email")}
+                type="email"
+                placeholder="basitali@gmail.com"
+                styles={{
+                  input: {
+                    width: "183px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    border:
+                      formik.touched.email && formik.errors.email
+                        ? "1px solid red"
+                        : "1px solid #00000012",
+                    backgroundColor: "#F5F5F599",
+                    fontFamily: "Montserrat",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    color: "#0F783B",
+                    "&::placeholder": {
+                      fontFamily: "Montserrat",
+                      fontWeight: "600",
+                      fontSize: "12px",
+                      color: "#9D9999",
+                    },
+                  },
+                }}
+              />
+              {formik.touched.email && formik.errors.email && (
                 <div
                   style={{
+                    color: "red",
+                    fontSize: "8px",
                     fontFamily: "Montserrat",
-                    fontWeight: "600",
-                    fontSize: "10px",
-                    lineHeight: "100%",
-                    letterSpacing: "0%",
-                    color: "#000000",
-                    display: "block",
-                    marginBottom: "4px",
+                    marginTop: "2px",
                   }}
                 >
-                  Phone Number <span style={{ color: "red" }}>*</span>
+                  {formik.errors.email}
                 </div>
-                <TextInput
-                  {...formik.getFieldProps("phoneNumber")}
-                  type="tel"
-                  placeholder="03045672973"
-                  styles={{
-                    input: {
-                      width: "183px",
-                      height: "36px",
-                      borderRadius: "8px",
-                      border:
-                        formik.touched.phoneNumber && formik.errors.phoneNumber
-                          ? "1px solid red"
-                          : "1px solid #00000012",
-                      backgroundColor: "#F5F5F599",
-                      fontFamily: "Montserrat",
-                      fontWeight: "500",
-                      fontSize: "12px",
-                      color: "#0F783B",
-                      "&::placeholder": {
-                        fontFamily: "Montserrat",
-                        fontWeight: "600",
-                        fontSize: "12px",
-                        color: "#9D9999",
-                      },
-                    },
-                  }}
-                />
-                {formik.touched.phoneNumber && formik.errors.phoneNumber && (
-                  <div
-                    style={{
-                      color: "red",
-                      fontSize: "8px",
-                      fontFamily: "Montserrat",
-                      marginTop: "2px",
-                    }}
-                  >
-                    {formik.errors.phoneNumber}
-                  </div>
-                )}
+              )}
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "600",
+                  fontSize: "10px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#000000",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
+                Phone Number <span style={{ color: "red" }}>*</span>
               </div>
-
-              <div>
+              <TextInput
+                {...formik.getFieldProps("phoneNumber")}
+                type="tel"
+                placeholder="03045672973"
+                styles={{
+                  input: {
+                    width: "183px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    border:
+                      formik.touched.phoneNumber && formik.errors.phoneNumber
+                        ? "1px solid red"
+                        : "1px solid #00000012",
+                    backgroundColor: "#F5F5F599",
+                    fontFamily: "Montserrat",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    color: "#0F783B",
+                    "&::placeholder": {
+                      fontFamily: "Montserrat",
+                      fontWeight: "600",
+                      fontSize: "12px",
+                      color: "#9D9999",
+                    },
+                  },
+                }}
+              />
+              {formik.touched.phoneNumber && formik.errors.phoneNumber && (
                 <div
                   style={{
+                    color: "red",
+                    fontSize: "8px",
                     fontFamily: "Montserrat",
-                    fontWeight: "600",
-                    fontSize: "10px",
-                    lineHeight: "100%",
-                    letterSpacing: "0%",
-                    color: "#000000",
-                    display: "block",
-                    marginBottom: "4px",
+                    marginTop: "2px",
                   }}
                 >
-                  Alternate Number
+                  {formik.errors.phoneNumber}
                 </div>
-                <TextInput
-                  {...formik.getFieldProps("alternateNumber")}
-                  type="tel"
-                  placeholder="-"
-                  styles={{
-                    input: {
-                      width: "183px",
-                      height: "36px",
-                      borderRadius: "8px",
-                      border:
-                        formik.touched.alternateNumber && formik.errors.alternateNumber
-                          ? "1px solid red"
-                          : "1px solid #00000012",
-                      backgroundColor: "#F5F5F599",
+              )}
+            </div>
+
+            <div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "600",
+                  fontSize: "10px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#000000",
+                  display: "block",
+                  marginBottom: "4px",
+                }}
+              >
+                Alternate Number
+              </div>
+              <TextInput
+                {...formik.getFieldProps("alternateNumber")}
+                type="tel"
+                placeholder="-"
+                styles={{
+                  input: {
+                    width: "183px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    border:
+                      formik.touched.alternateNumber &&
+                      formik.errors.alternateNumber
+                        ? "1px solid red"
+                        : "1px solid #00000012",
+                    backgroundColor: "#F5F5F599",
+                    fontFamily: "Montserrat",
+                    fontWeight: "500",
+                    fontSize: "12px",
+                    color: "#0F783B",
+                    "&::placeholder": {
                       fontFamily: "Montserrat",
-                      fontWeight: "500",
+                      fontWeight: "600",
                       fontSize: "12px",
-                      color: "#0F783B",
-                      "&::placeholder": {
-                        fontFamily: "Montserrat",
-                        fontWeight: "600",
-                        fontSize: "12px",
-                        color: "#9D9999",
-                      },
+                      color: "#9D9999",
                     },
-                  }}
-                />
-                {formik.touched.alternateNumber && formik.errors.alternateNumber && (
+                  },
+                }}
+              />
+              {formik.touched.alternateNumber &&
+                formik.errors.alternateNumber && (
                   <div
                     style={{
                       color: "red",
@@ -339,7 +346,7 @@ const CheckoutPage: React.FC = () => {
                     {formik.errors.alternateNumber}
                   </div>
                 )}
-              </div>
+            </div>
           </div>
         </div>
 
@@ -356,7 +363,7 @@ const CheckoutPage: React.FC = () => {
               margin: "0 0 16px 0",
             }}
           >
-            Product (2)
+            Product ({totalItems})
           </h2>
 
           <div
@@ -425,112 +432,58 @@ const CheckoutPage: React.FC = () => {
               marginBottom: "16px",
             }}
           >
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              Nitrophos
-            </div>
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              Fertilizers
-            </div>
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              1 bag
-            </div>
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              PKR 15,000
-            </div>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr 1fr 1fr",
-              gap: "16px",
-              marginBottom: "16px",
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              Urea
-            </div>
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              Fertilizers
-            </div>
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              1 bag
-            </div>
-            <div
-              style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}
-            >
-              PKR 15,000
-            </div>
+            {allCartItems.map((item, index) => (
+              <React.Fragment key={index}>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  {item?.product?.name}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  {item?.product?.category}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  {item?.quantity} bag{item?.quantity > 1 ? "s" : ""}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  PKR {item?.totalPrice}
+                </div>
+              </React.Fragment>
+            ))}
           </div>
         </div>
 
@@ -676,7 +629,7 @@ const CheckoutPage: React.FC = () => {
                   color: "#000000",
                 }}
               >
-                PKR 31,000
+                PKR{" "}{totalAmount}
               </span>
             </div>
           </div>
