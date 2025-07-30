@@ -2,6 +2,8 @@ import { Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EyeIcon from "./EyeIcon";
 
+// responsive done !
+
 const CarouselCard = ({ product }: { product: any }) => {
   const navigate = useNavigate();
 
