@@ -97,7 +97,7 @@ const purchaseProductSlice = createSlice({
           addToCart: false,
           rating: 4.0,
           reviews: 8,
-          price: "800",
+          price: "700",
           image: f2,
           description: "Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2vvProduct with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2",
         },
