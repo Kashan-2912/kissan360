@@ -1,7 +1,6 @@
 import { Button, Container, Image, Text, Title } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { AiOutlineClose } from "react-icons/ai";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   selectProductById,
   updateProductCartStatus,
@@ -9,12 +8,9 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { 
   addToCart, 
-  removeProductFromCart,
   incrementQuantity,
   decrementQuantity,
   selectCartItemByProductId,
-  selectCartTotalItems,
-  selectCartTotalAmount,
   selectIsProductInCart,
   formatPrice
 } from "../../store/cartSlice";
@@ -30,7 +26,6 @@ const SinglePurchaseProduct = () => {
 
   const [product, setProduct] = useState<PurchaseProduct | undefined>(undefined);
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Redux selectors
@@ -45,9 +40,6 @@ const SinglePurchaseProduct = () => {
   const isProductInCart = useSelector((state: RootState) =>
     selectIsProductInCart(state, productIdNumber)
   );
-  
-  const totalCartItems = useSelector(selectCartTotalItems);
-  const totalCartAmount = useSelector(selectCartTotalAmount);
 
   useEffect(() => {
     setProduct(pdt);
@@ -56,8 +48,6 @@ const SinglePurchaseProduct = () => {
 
   // Get current quantity from cart or default to 1
   const currentQuantity = cartItem?.quantity || 1;
-
-  
 
   const handleAddToCart = () => {
     console.log("Entered add to cart");
@@ -98,14 +88,6 @@ const SinglePurchaseProduct = () => {
       // Only decrement if product is in cart
       dispatch(decrementQuantity(productIdNumber));
     }
-  };
-
-  const handleRemove = (productIdNumber: number) => {
-    dispatch(
-      updateProductCartStatus({ productId: productIdNumber, addToCart: false })
-    );
-    dispatch(removeProductFromCart(productIdNumber));
-    setIsCartOpen(false);
   };
 
   // Calculate display price based on current quantity
