@@ -95,50 +95,6 @@ const FMSLandingPage = () => {
         />
       </div>
 
-      <style jsx>{`
-        @keyframes float-slow {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-        }
-
-        @keyframes float-slow-reverse {
-          0%,
-          100% {
-            transform: translateY(-10px);
-          }
-          50% {
-            transform: translateY(10px);
-          }
-        }
-
-        @keyframes float-slow-delayed {
-          0%,
-          100% {
-            transform: translateY(-5px);
-          }
-          50% {
-            transform: translateY(-25px);
-          }
-        }
-
-        .animate-float-slow {
-          animation: float-slow 8s ease-in-out infinite;
-        }
-
-        .animate-float-slow-reverse {
-          animation: float-slow-reverse 10s ease-in-out infinite;
-        }
-
-        .animate-float-slow-delayed {
-          animation: float-slow-delayed 12s ease-in-out infinite 2s;
-        }
-      `}</style>
-
       {/* Header */}
       <header className="relative z-50 bg-white/10 backdrop-blur-lg border-b border-white/10">
         <div className="px-6 py-4 flex items-center justify-between">
