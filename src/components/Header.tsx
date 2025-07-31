@@ -140,7 +140,7 @@ export const Header = () => {
     "/purchase/product/:id": "Marketplace",
     "/purchase/product/:id/checkout": "Marketplace",
     "/purchase/history": "Marketplace",
-    "/purchase/order/1": "Inventory", // temporary, should be /purchase/order/:id
+    "/purchase/order/:orderId": "Inventory",
   };
 
   let pageTitle = "Dashboard";

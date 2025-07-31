@@ -12,6 +12,6 @@ export const PurchaseRoutes = (
     <Route path="/purchase/product/:productId" element={<SinglePurchaseProduct />} />
     <Route path="/purchase/checkout" element={<CheckoutPage />} />
     <Route path="/purchase/history" element={<OrderHistory />} />
-    <Route path="/purchase/order/1" element={<ViewOrderDetails />} />
+    <Route path="/purchase/order/:orderId" element={<ViewOrderDetails />} />
   </Route>
 );

@@ -1,59 +1,46 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Container, Group, Text, Stack, Paper, Image, Flex } from '@mantine/core';
-// import { useSelector } from 'react-redux';
-// import { RootState } from '../store/store';
-import IMG from "../../assets/f3.png"
-
-interface Product {
-  id: string;
-  image: string;
-  productName: string;
-  category: string;
-  quantity: string;
-  price: string;
-}
-
-interface OrderDetails {
-  orderId: string;
-  orderDate: string;
-  totalPrice: string;
-  status: string;
-  shippingDetails: string;
-  totalProducts: number;
-  products: Product[];
-}
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { selectOrders, selectSelectedOrder, setSelectedOrder } from '../../store/orderHistorySlice';
+import type { OrderDetails, OrderedProduct } from '../../types';
+import IMG from "../../assets/f3.png";
 
 const ViewOrderDetails: React.FC = () => {
-  // Get order details from Redux store (commented out for demo)
-  // const orderDetails = useSelector((state: RootState) => state.orders.currentOrder);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { orderId } = useParams<{ orderId: string }>();
 
-  // Dummy data for demonstration
-  const orderDetails: OrderDetails = {
-    orderId: "47895303",
-    orderDate: "47895303",
-    totalPrice: "PKR 30,000",
-    status: "Shipped",
-    shippingDetails: "Sybrid Private Limited, street 14, i9/2, Islamabad, Pakistan",
-    totalProducts: 2,
-    products: [
-      {
-        id: "1",
-        image: IMG,
-        productName: "Nitrophos NP",
-        category: "Fertilizer",
-        quantity: "1 bag",
-        price: "9,000 PKR"
-      },
-      {
-        id: "2",
-        image: IMG,
-        productName: "Urea",
-        category: "Fertilizer",
-        quantity: "1 bag",
-        price: "9,000 PKR"
+  console.log("ORDER ID: ", orderId)
+  
+  const orders = useSelector(selectOrders);
+  const selectedOrder = useSelector(selectSelectedOrder);
+
+  // console.log("selected order id: ", selectedOrder?.orderedProducts.length)
+
+  // Find and set the selected order when component mounts or orderId changes
+  useEffect(() => {
+    if (orderId && orders.length > 0) {
+      const order = orders.find(o => o.orderId === orderId);
+      if (order) {
+        dispatch(setSelectedOrder(order));
+      } else {
+        // Order not found, redirect back to order history
+        navigate(`/purchase/order/${orderId}`);
       }
-    ]
-  };
+    }
+  }, [orderId, orders, dispatch, navigate]);
+
+  // If no order is selected or found, show loading or redirect
+  if (!selectedOrder) {
+    return (
+      <Container style={{ padding: '2px', minHeight: '100vh' }}>
+        <Paper bg={"transparent"} style={{ maxWidth: '896px', borderRadius: '8px' }}>
+          <Text>Loading order details...</Text>
+        </Paper>
+      </Container>
+    );
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -70,7 +57,23 @@ const ViewOrderDetails: React.FC = () => {
     }
   };
 
-  const ProductCard: React.FC<{ product: Product }> = ({ product }) => (
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB');
+  };
+
+  // Format shipping address
+  const formatShippingAddress = (shippingAddress: OrderDetails['shippingAddress']) => {
+    return `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.district}, ${shippingAddress.state}, ${shippingAddress.country} - ${shippingAddress.postalCode}`;
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return `PKR ${amount.toLocaleString()}`;
+  };
+
+  const ProductCard: React.FC<{ product: OrderedProduct }> = ({ product }) => (
     <Flex align="center" gap={42} style={{ width: '579px', height: '182px' }}>
       {/* Image Container with white background */}
       <Paper
@@ -86,14 +89,13 @@ const ViewOrderDetails: React.FC = () => {
         }}
       >
         <Image
-          src={product.image}
-          alt={product.productName}
+          src={product.image || IMG} // Use product image or fallback
+          alt={product.name}
           style={{
             width: '98px',
             height: '133px',
             objectFit: 'cover',
             borderRadius: '4px',
-            // boxShadow: '0px 4px 10px 0px rgba(0,0,0,0.1)'
           }}
         />
       </Paper>
@@ -112,7 +114,7 @@ const ViewOrderDetails: React.FC = () => {
             fontFamily: 'Montserrat'
           }}
         >
-          {product.productName}
+          {product.name}
         </Text>
         
         {/* Category */}
@@ -171,7 +173,7 @@ const ViewOrderDetails: React.FC = () => {
           </Text>
         </Group>
         
-        {/* Price */}
+        {/* Unit Price */}
         <Group gap={4} style={{ justifyContent: 'flex-start' }}>
           <Text
             style={{
@@ -183,7 +185,7 @@ const ViewOrderDetails: React.FC = () => {
               fontFamily: 'Poppins'
             }}
           >
-            Price:
+            Unit Price:
           </Text>
           <Text
             style={{
@@ -195,7 +197,35 @@ const ViewOrderDetails: React.FC = () => {
               fontFamily: 'Poppins'
             }}
           >
-            {product.price}
+            {formatCurrency(product.unitPrice)}
+          </Text>
+        </Group>
+
+        {/* Total Price for this product */}
+        <Group gap={4} style={{ justifyContent: 'flex-start' }}>
+          <Text
+            style={{
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '1',
+              letterSpacing: 'normal',
+              color: '#7B7B7B',
+              fontFamily: 'Poppins'
+            }}
+          >
+            Total:
+          </Text>
+          <Text
+            style={{
+              fontWeight: 600,
+              fontSize: '16px',
+              lineHeight: '1',
+              letterSpacing: 'normal',
+              color: '#0F783B',
+              fontFamily: 'Poppins'
+            }}
+          >
+            {formatCurrency(product.totalPrice)}
           </Text>
         </Group>
       </Stack>
@@ -233,7 +263,7 @@ const ViewOrderDetails: React.FC = () => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                {orderDetails.orderId}
+                {selectedOrder.orderId}
               </Text>
             </Group>
             
@@ -261,7 +291,7 @@ const ViewOrderDetails: React.FC = () => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                {orderDetails.orderDate}
+                {formatDate(selectedOrder.orderDate)}
               </Text>
             </Group>
             
@@ -289,12 +319,12 @@ const ViewOrderDetails: React.FC = () => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                {orderDetails.totalPrice}
+                {formatCurrency(selectedOrder.totalAmount)}
               </Text>
             </Group>
           </Flex>
           
-          {/* Second Row: Status, Shipping Details */}
+          {/* Second Row: Status, Customer Info */}
           <Flex align="flex-start" justify="space-between" style={{ width: '100%' }}>
             {/* Status */}
             <Group gap={16}>
@@ -313,15 +343,15 @@ const ViewOrderDetails: React.FC = () => {
                 style={{
                   fontWeight: 600,
                   fontSize: '16px',
-                  color: getStatusColor(orderDetails.status),
+                  color: getStatusColor(selectedOrder.status),
                   fontFamily: 'Montserrat'
                 }}
               >
-                {orderDetails.status}
+                {selectedOrder.status}
               </Text>
             </Group>
             
-            {/* Shipping Details */}
+            {/* Customer Info */}
             <Group gap={16} style={{ marginLeft: '80px' }}>
               <Text
                 style={{
@@ -332,7 +362,7 @@ const ViewOrderDetails: React.FC = () => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                Shipping Details
+                Customer
               </Text>
               <Text
                 style={{
@@ -342,9 +372,117 @@ const ViewOrderDetails: React.FC = () => {
                   fontFamily: 'Montserrat'
                 }}
               >
-                {orderDetails.shippingDetails}
+                {selectedOrder.customerName}
               </Text>
             </Group>
+          </Flex>
+
+          {/* Third Row: Shipping Details */}
+          <Flex align="flex-start" justify="flex-start" style={{ width: '100%' }}>
+            <Group gap={16}>
+              <Text
+                style={{
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  whiteSpace: 'nowrap',
+                  color: '#5C5C5C',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Shipping Address
+              </Text>
+              <Text
+                style={{
+                  fontWeight: 600,
+                  fontSize: '16px',
+                  color: 'black',
+                  fontFamily: 'Montserrat',
+                  maxWidth: '600px',
+                  lineHeight: '1.4'
+                }}
+              >
+                {formatShippingAddress(selectedOrder.shippingAddress)}
+              </Text>
+            </Group>
+          </Flex>
+
+          {/* Contact Information */}
+          <Flex align="center" justify="space-between">
+            {/* Email */}
+            <Group gap={16}>
+              <Text
+                style={{
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  whiteSpace: 'nowrap',
+                  color: '#5C5C5C',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Email
+              </Text>
+              <Text
+                style={{
+                  fontWeight: 600,
+                  fontSize: '16px',
+                  color: 'black',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                {selectedOrder.customerEmail}
+              </Text>
+            </Group>
+            
+            {/* Contact Number */}
+            <Group gap={16}>
+              <Text
+                style={{
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  whiteSpace: 'nowrap',
+                  color: '#5C5C5C',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                Contact
+              </Text>
+              <Text
+                style={{
+                  fontWeight: 600,
+                  fontSize: '16px',
+                  color: 'black',
+                  fontFamily: 'Montserrat'
+                }}
+              >
+                {selectedOrder.contactNumber}
+              </Text>
+            </Group>
+
+            {selectedOrder.alternateNumber && (
+              <Group gap={16}>
+                <Text
+                  style={{
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    whiteSpace: 'nowrap',
+                    color: '#5C5C5C',
+                    fontFamily: 'Montserrat'
+                  }}
+                >
+                  Alternate
+                </Text>
+                <Text
+                  style={{
+                    fontWeight: 600,
+                    fontSize: '16px',
+                    color: 'black',
+                    fontFamily: 'Montserrat'
+                  }}
+                >
+                  {selectedOrder.alternateNumber}
+                </Text>
+              </Group>
+            )}
           </Flex>
         </Stack>
         
@@ -388,14 +526,14 @@ const ViewOrderDetails: React.FC = () => {
                 fontFamily: 'Montserrat'
               }}
             >
-              {orderDetails.totalProducts}
+              {selectedOrder.totalItems}
             </Text>
           </Group>
           
           {/* Products List */}
           <Stack gap={30}>
-            {orderDetails.products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {selectedOrder.orderedProducts.map((product) => (
+              <ProductCard key={`${product.id}-${product.orderId}`} product={product} />
             ))}
           </Stack>
         </Stack>
@@ -405,48 +543,3 @@ const ViewOrderDetails: React.FC = () => {
 };
 
 export default ViewOrderDetails;
-
-/*
-// In your store/ordersSlice.ts
-interface OrderState {
-  currentOrder: OrderDetails | null;
-  orders: OrderDetails[];
-  loading: boolean;
-  error: string | null;
-}
-
-const initialState: OrderState = {
-  currentOrder: null,
-  orders: [],
-  loading: false,
-  error: null,
-};
-
-// Actions
-export const fetchOrderDetails = createAsyncThunk(
-  'orders/fetchOrderDetails',
-  async (orderId: string) => {
-    const response = await api.getOrderDetails(orderId);
-    return response.data;
-  }
-);
-
-// In your component:
-const ViewOrderDetails: React.FC = () => {
-  const dispatch = useAppDispatch();
-  const { currentOrder, loading, error } = useSelector((state: RootState) => state.orders);
-  const { orderId } = useParams<{ orderId: string }>();
-
-  useEffect(() => {
-    if (orderId) {
-      dispatch(fetchOrderDetails(orderId));
-    }
-  }, [dispatch, orderId]);
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage message={error} />;
-  if (!currentOrder) return <div>Order not found</div>;
-
-  // Rest of component logic...
-};
-*/

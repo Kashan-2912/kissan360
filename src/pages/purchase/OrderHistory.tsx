@@ -105,7 +105,7 @@ const OrderHistory = () => {
   const handleViewOrder = (orderId: string) => {
     console.log("Viewing order with ID:", orderId);
     // navigate(`/purchase/order/${orderId}`); // TODO: right now using dummy, but for later go for dynamic
-    navigate("/purchase/order/1");
+    navigate(`/purchase/order/${orderId}`);
   };
 
   const getStatusColor = (status: string) => {
