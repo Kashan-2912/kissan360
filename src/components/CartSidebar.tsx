@@ -49,8 +49,9 @@ const CartSidebar = ({setIsCartOpen} : {setIsCartOpen: React.Dispatch<React.SetS
     if (!isViewingAllCart) {
       setProduct(pdt);
       console.log("PRODUCT NAME: ", pdt?.name);
+      console.log("Product Name (not pdt but state wala): ", product?.name)
     }
-  }, [pdt, isViewingAllCart]);
+  }, [pdt, isViewingAllCart, product]);
 
   // Get current quantity from cart or default to 1
   const currentQuantity = cartItem?.quantity || 1;

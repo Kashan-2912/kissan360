@@ -1,5 +1,5 @@
 import { Button, Container, Image, Text, Title } from "@mantine/core";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   selectProductById,
@@ -14,7 +14,7 @@ import {
   selectIsProductInCart,
   formatPrice
 } from "../../store/cartSlice";
-import type { PurchaseProduct } from "../../types";
+// import type { PurchaseProduct } from "../../types";
 import type { RootState } from "../../store";
 import CartSidebar from "../../components/CartSidebar";
 
@@ -24,7 +24,7 @@ const SinglePurchaseProduct = () => {
 
   console.log("Product ID:", productIdNumber);
 
-  const [product, setProduct] = useState<PurchaseProduct | undefined>(undefined);
+  // const [product, setProduct] = useState<PurchaseProduct | undefined>(undefined);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -41,10 +41,10 @@ const SinglePurchaseProduct = () => {
     selectIsProductInCart(state, productIdNumber)
   );
 
-  useEffect(() => {
-    setProduct(pdt);
-    console.log("PRODUCT NAME: ", pdt?.name);
-  }, [pdt]);
+  // useEffect(() => {
+  //   setProduct(pdt);
+  //   console.log("PRODUCT NAME: ", pdt?.name);
+  // }, [pdt]);
 
   // Get current quantity from cart or default to 1
   const currentQuantity = cartItem?.quantity || 1;

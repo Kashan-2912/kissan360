@@ -21,6 +21,7 @@ import {
   addDummyProducts,
 } from "../../store/purchaseProductSlice";
 import CartSidebar from "../../components/CartSidebar";
+import type { EmblaCarouselType } from 'embla-carousel';
 
 const categories = ["All", "Fertilizers", "Pesticides", "Weed"] as const;
 
@@ -33,7 +34,7 @@ export default function AgriculturalProductsUI() {
 
   const dispatch = useDispatch();
 
-  const [embla, setEmbla] = useState<any>(null);
+  const [embla, setEmbla] = useState<EmblaCarouselType | null>(null);
 
   const allProducts = useSelector(selectAllPurchaseProducts);
   const carouselProducts = useSelector(selectCarouselProducts);

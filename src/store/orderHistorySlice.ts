@@ -210,7 +210,7 @@ const orderHistorySlice = createSlice({
     },
 
     // Clear all data
-    clearOrderHistory: (state) => {
+    clearOrderHistory: () => {
       return initialState;
     },
   },

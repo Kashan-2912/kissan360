@@ -1,8 +1,9 @@
 import { Plus, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import EyeIcon from "./EyeIcon";
+import type { PurchaseProduct } from "../types";
 
-const GridCard = ({ product }: { product: any }) => {
+const GridCard = ({ product }: { product: PurchaseProduct }) => {
   const navigate = useNavigate();
 
   const handleNavigate = (productId: number) => {
@@ -49,7 +50,7 @@ const GridCard = ({ product }: { product: any }) => {
                     key={star}
                     size={12}
                     className={
-                      star <= product.rating
+                      star <= (product?.rating ?? 0)
                         ? "text-[#FFD600] fill-[#FFD600]"
                         : "text-[#DBDCDD] fill-[#DBDCDD]"
                     }
