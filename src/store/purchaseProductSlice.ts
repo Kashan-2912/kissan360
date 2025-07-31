@@ -6,6 +6,9 @@ import {
 import type { PurchaseProduct, PurchasedProductState } from "../types/index";
 import f1 from "../assets/f1.png";
 import f2 from "../assets/f2.png";
+import f3 from "../assets/f3.png";
+import f4 from "../assets/f4.png";
+import f5 from "../assets/f5.png";
 
 const initialState: PurchasedProductState = {
   products: [],
@@ -101,7 +104,78 @@ const purchaseProductSlice = createSlice({
           image: f2,
           description: "Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2vvProduct with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2Product with ID 2",
         },
-        // Add more as needed
+        {
+          id: 3,
+          name: "Nitrophos",
+          category: "Fertilizers",
+          inStock: false,
+          addToCart: false,
+          rating: 2.5,
+          reviews: 4,
+          price: "5969",
+          image: f3,
+          description: "Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3vvProduct with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3Product with ID 3",
+        },
+        {
+          id: 4,
+          name: "Weed Killer",
+          category: "Pesticides",
+          inStock: false,
+          addToCart: false,
+          rating: 1.0,
+          reviews: 8,
+          price: "699",
+          image: f4,
+          description: "Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4vvProduct with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4Product with ID 4",
+        },
+        {
+          id: 5,
+          name: "Weed Killer Max",
+          category: "Weed",
+          inStock: true,
+          addToCart: false,
+          rating: 5.0,
+          reviews: 8,
+          price: "1499",
+          image: f5,
+          description: "Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5vvProduct with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5Product with ID 5",
+        },
+        {
+          id: 6,
+          name: "Weed Killer Max",
+          category: "Weed",
+          inStock: true,
+          addToCart: false,
+          rating: 4.5,
+          reviews: 8,
+          price: "989",
+          image: f3,
+          description: "Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6vvProduct with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6Product with ID 6",
+        },
+        {
+          id: 7,
+          name: "Famous Weed",
+          category: "Weed",
+          inStock: true,
+          addToCart: false,
+          rating: 4.0,
+          reviews: 19,
+          price: "399",
+          image: f2,
+          description: "Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7vvProduct with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7Product with ID 7",
+        },
+        {
+          id: 8,
+          name: "New Gen Pesticides",
+          category: "Pesticides",
+          inStock: true,
+          addToCart: false,
+          rating: 3.0,
+          reviews: 0,
+          price: "199",
+          image: f4,
+          description: "Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8vvProduct with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8Product with ID 8",
+        },
       ];
 
       state.products = dummyProducts;
@@ -245,7 +319,7 @@ export const selectCarouselProducts = (state: {
   purchaseProducts: PurchasedProductState;
 }) => {
   // Return first 5 products or newest products for carousel
-  return state.purchaseProducts.products.slice(0, 5);
+  return state.purchaseProducts.products;
 };
 
 export const selectPurchaseProductsLoading = (state: {

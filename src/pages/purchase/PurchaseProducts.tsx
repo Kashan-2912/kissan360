@@ -8,9 +8,9 @@ import CarouselCard from "../../components/CarouselCard";
 import GridCard from "../../components/GridCard";
 import cart from "../../assets/cart.png";
 import {
-  fallbackCarouselProducts,
   fallbackGridProducts,
 } from "../../util/dummyData";
+import { selectCarouselProducts } from "../../store/purchaseProductSlice"
 
 // Redux imports
 import {
@@ -36,6 +36,9 @@ export default function AgriculturalProductsUI() {
   const [embla, setEmbla] = useState<any>(null);
 
   const allProducts = useSelector(selectAllPurchaseProducts);
+  const carouselProducts = useSelector(selectCarouselProducts);
+
+  console.log("TOTAL CAROUSEL: ", carouselProducts.length)
 
   const loading = useSelector(selectPurchaseProductsLoading);
   const error = useSelector(selectPurchaseProductsError);
@@ -137,7 +140,7 @@ export default function AgriculturalProductsUI() {
                 withControls={false}
                 withIndicators={false}
               >
-                {fallbackCarouselProducts.map((product) => (
+                {carouselProducts.map((product) => (
                   <Carousel.Slide key={product.id}>
                     <div className="flex justify-center px-2">
                       <CarouselCard product={product} />
