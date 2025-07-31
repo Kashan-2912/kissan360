@@ -8,12 +8,19 @@ import { Modal, Center } from "@mantine/core";
 import { Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import shippingSchema from "../../validation/shippingSchema";
-import { selectCartItemsCount, selectCartItems, selectCartTotalAmount } from "../../store/cartSlice";
-import { useSelector } from "react-redux";
+import {
+  selectCartItemsCount,
+  selectCartItems,
+  selectCartTotalAmount,
+  clearCart,
+} from "../../store/cartSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { addOrderFromCart } from "../../store/orderHistorySlice";
 
 const CheckoutPage: React.FC = () => {
   const [orderSubmitted, setOrderSubmitted] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const totalItems = useSelector(selectCartItemsCount);
   const allCartItems = useSelector(selectCartItems);
@@ -47,6 +54,30 @@ const CheckoutPage: React.FC = () => {
   const handleConfirmOrder = () => {
     console.log("Form values:", formik.values);
     console.log("Order confirmed");
+
+    dispatch(
+      addOrderFromCart({
+        customerInfo: {
+          customerName: formik.values.name,
+          customerEmail: formik.values.email,
+          contactNumber: formik.values.phoneNumber,
+          alternateNumber: formik.values.alternateNumber,
+          shippingAddress: {
+            country: formik.values.country,
+            state: formik.values.state,
+            district: formik.values.district,
+            city: formik.values.city,
+            address: formik.values.address,
+            postalCode: formik.values.postalCode,
+          },
+        },
+        cartItems: allCartItems,
+        totalAmount,
+        totalItems,
+      })
+    );
+
+    dispatch(clearCart());
     setOrderSubmitted(true);
   };
 
@@ -61,7 +92,7 @@ const CheckoutPage: React.FC = () => {
     navigate("/purchase/history");
   };
 
-  const inputStyles = (hasError) => ({
+  const inputStyles = (hasError: string | boolean | undefined) => ({
     input: {
       width: "100%",
       height: "36px",
@@ -81,7 +112,7 @@ const CheckoutPage: React.FC = () => {
     },
   });
 
-  const selectStyles = (hasError) => ({
+  const selectStyles = (hasError: string | boolean | undefined) => ({
     input: {
       fontFamily: "Montserrat",
       fontWeight: "500",
@@ -170,7 +201,9 @@ const CheckoutPage: React.FC = () => {
                 <TextInput
                   {...formik.getFieldProps("name")}
                   placeholder="Basit Ali Khan"
-                  styles={inputStyles(formik.touched.name && formik.errors.name)}
+                  styles={inputStyles(
+                    formik.touched.name && formik.errors.name
+                  )}
                 />
                 {formik.touched.name && formik.errors.name && (
                   <div style={errorStyle}>{formik.errors.name}</div>
@@ -184,7 +217,9 @@ const CheckoutPage: React.FC = () => {
                   {...formik.getFieldProps("email")}
                   type="email"
                   placeholder="basitali@gmail.com"
-                  styles={inputStyles(formik.touched.email && formik.errors.email)}
+                  styles={inputStyles(
+                    formik.touched.email && formik.errors.email
+                  )}
                 />
                 {formik.touched.email && formik.errors.email && (
                   <div style={errorStyle}>{formik.errors.email}</div>
@@ -202,7 +237,9 @@ const CheckoutPage: React.FC = () => {
                   {...formik.getFieldProps("phoneNumber")}
                   type="tel"
                   placeholder="03045672973"
-                  styles={inputStyles(formik.touched.phoneNumber && formik.errors.phoneNumber)}
+                  styles={inputStyles(
+                    formik.touched.phoneNumber && formik.errors.phoneNumber
+                  )}
                 />
                 {formik.touched.phoneNumber && formik.errors.phoneNumber && (
                   <div style={errorStyle}>{formik.errors.phoneNumber}</div>
@@ -214,11 +251,17 @@ const CheckoutPage: React.FC = () => {
                   {...formik.getFieldProps("alternateNumber")}
                   type="tel"
                   placeholder="-"
-                  styles={inputStyles(formik.touched.alternateNumber && formik.errors.alternateNumber)}
+                  styles={inputStyles(
+                    formik.touched.alternateNumber &&
+                      formik.errors.alternateNumber
+                  )}
                 />
-                {formik.touched.alternateNumber && formik.errors.alternateNumber && (
-                  <div style={errorStyle}>{formik.errors.alternateNumber}</div>
-                )}
+                {formik.touched.alternateNumber &&
+                  formik.errors.alternateNumber && (
+                    <div style={errorStyle}>
+                      {formik.errors.alternateNumber}
+                    </div>
+                  )}
               </div>
             </div>
           </div>
@@ -247,7 +290,9 @@ const CheckoutPage: React.FC = () => {
                 {...formik.getFieldProps("email")}
                 type="email"
                 placeholder="basitali@gmail.com"
-                styles={inputStyles(formik.touched.email && formik.errors.email)}
+                styles={inputStyles(
+                  formik.touched.email && formik.errors.email
+                )}
               />
               {formik.touched.email && formik.errors.email && (
                 <div style={errorStyle}>{formik.errors.email}</div>
@@ -262,7 +307,9 @@ const CheckoutPage: React.FC = () => {
                 {...formik.getFieldProps("phoneNumber")}
                 type="tel"
                 placeholder="03045672973"
-                styles={inputStyles(formik.touched.phoneNumber && formik.errors.phoneNumber)}
+                styles={inputStyles(
+                  formik.touched.phoneNumber && formik.errors.phoneNumber
+                )}
               />
               {formik.touched.phoneNumber && formik.errors.phoneNumber && (
                 <div style={errorStyle}>{formik.errors.phoneNumber}</div>
@@ -275,11 +322,15 @@ const CheckoutPage: React.FC = () => {
                 {...formik.getFieldProps("alternateNumber")}
                 type="tel"
                 placeholder="-"
-                styles={inputStyles(formik.touched.alternateNumber && formik.errors.alternateNumber)}
+                styles={inputStyles(
+                  formik.touched.alternateNumber &&
+                    formik.errors.alternateNumber
+                )}
               />
-              {formik.touched.alternateNumber && formik.errors.alternateNumber && (
-                <div style={errorStyle}>{formik.errors.alternateNumber}</div>
-              )}
+              {formik.touched.alternateNumber &&
+                formik.errors.alternateNumber && (
+                  <div style={errorStyle}>{formik.errors.alternateNumber}</div>
+                )}
             </div>
           </div>
         </div>
@@ -291,79 +342,114 @@ const CheckoutPage: React.FC = () => {
           {/* Mobile Layout - Stack vertically */}
           <div className="block md:hidden">
             {allCartItems.map((item, index) => (
-              <div key={index} className="border-b border-gray-200 py-3 last:border-b-0">
+              <div
+                key={index}
+                className="border-b border-gray-200 py-3 last:border-b-0"
+              >
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <span style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "normal",
-                      fontSize: "14px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#5C5C5C",
-                    }}>Name:</span>
-                    <div style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "600",
-                      fontSize: "16px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#000000",
-                    }}>{item?.product?.name}</div>
+                    <span
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "normal",
+                        fontSize: "14px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#5C5C5C",
+                      }}
+                    >
+                      Name:
+                    </span>
+                    <div
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "600",
+                        fontSize: "16px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#000000",
+                      }}
+                    >
+                      {item?.product?.name}
+                    </div>
                   </div>
                   <div>
-                    <span style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "normal",
-                      fontSize: "14px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#5C5C5C",
-                    }}>Category:</span>
-                    <div style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "600",
-                      fontSize: "16px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#000000",
-                    }}>{item?.product?.category}</div>
+                    <span
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "normal",
+                        fontSize: "14px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#5C5C5C",
+                      }}
+                    >
+                      Category:
+                    </span>
+                    <div
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "600",
+                        fontSize: "16px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#000000",
+                      }}
+                    >
+                      {item?.product?.category}
+                    </div>
                   </div>
                   <div>
-                    <span style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "normal",
-                      fontSize: "14px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#5C5C5C",
-                    }}>Quantity:</span>
-                    <div style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "600",
-                      fontSize: "16px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#000000",
-                    }}>{item?.quantity} bag{item?.quantity > 1 ? "s" : ""}</div>
+                    <span
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "normal",
+                        fontSize: "14px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#5C5C5C",
+                      }}
+                    >
+                      Quantity:
+                    </span>
+                    <div
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "600",
+                        fontSize: "16px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#000000",
+                      }}
+                    >
+                      {item?.quantity} bag{item?.quantity > 1 ? "s" : ""}
+                    </div>
                   </div>
                   <div>
-                    <span style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "normal",
-                      fontSize: "14px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#5C5C5C",
-                    }}>Price:</span>
-                    <div style={{
-                      fontFamily: "Montserrat",
-                      fontWeight: "600",
-                      fontSize: "16px",
-                      lineHeight: "100%",
-                      letterSpacing: "0%",
-                      color: "#000000",
-                    }}>PKR {item?.totalPrice}</div>
+                    <span
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "normal",
+                        fontSize: "14px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#5C5C5C",
+                      }}
+                    >
+                      Price:
+                    </span>
+                    <div
+                      style={{
+                        fontFamily: "Montserrat",
+                        fontWeight: "600",
+                        fontSize: "16px",
+                        lineHeight: "100%",
+                        letterSpacing: "0%",
+                        color: "#000000",
+                      }}
+                    >
+                      PKR {item?.totalPrice}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -373,74 +459,106 @@ const CheckoutPage: React.FC = () => {
           {/* Desktop Layout - Table format */}
           <div className="hidden md:block">
             <div className="grid grid-cols-4 gap-4 mb-4">
-              <div style={{
-                fontFamily: "Montserrat",
-                fontWeight: "normal",
-                fontSize: "14px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#5C5C5C",
-              }}>Name</div>
-              <div style={{
-                fontFamily: "Montserrat",
-                fontWeight: "normal",
-                fontSize: "14px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#5C5C5C",
-              }}>Category</div>
-              <div style={{
-                fontFamily: "Montserrat",
-                fontWeight: "normal",
-                fontSize: "14px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#5C5C5C",
-              }}>Quantity</div>
-              <div style={{
-                fontFamily: "Montserrat",
-                fontWeight: "normal",
-                fontSize: "14px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#5C5C5C",
-              }}>Price</div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#5C5C5C",
+                }}
+              >
+                Name
+              </div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#5C5C5C",
+                }}
+              >
+                Category
+              </div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#5C5C5C",
+                }}
+              >
+                Quantity
+              </div>
+              <div
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#5C5C5C",
+                }}
+              >
+                Price
+              </div>
             </div>
 
             {allCartItems.map((item, index) => (
               <div key={index} className="grid grid-cols-4 gap-4 mb-4">
-                <div style={{
-                  fontFamily: "Montserrat",
-                  fontWeight: "600",
-                  fontSize: "16px",
-                  lineHeight: "100%",
-                  letterSpacing: "0%",
-                  color: "#000000",
-                }}>{item?.product?.name}</div>
-                <div style={{
-                  fontFamily: "Montserrat",
-                  fontWeight: "600",
-                  fontSize: "16px",
-                  lineHeight: "100%",
-                  letterSpacing: "0%",
-                  color: "#000000",
-                }}>{item?.product?.category}</div>
-                <div style={{
-                  fontFamily: "Montserrat",
-                  fontWeight: "600",
-                  fontSize: "16px",
-                  lineHeight: "100%",
-                  letterSpacing: "0%",
-                  color: "#000000",
-                }}>{item?.quantity} bag{item?.quantity > 1 ? "s" : ""}</div>
-                <div style={{
-                  fontFamily: "Montserrat",
-                  fontWeight: "600",
-                  fontSize: "16px",
-                  lineHeight: "100%",
-                  letterSpacing: "0%",
-                  color: "#000000",
-                }}>PKR {item?.totalPrice}</div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  {item?.product?.name}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  {item?.product?.category}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  {item?.quantity} bag{item?.quantity > 1 ? "s" : ""}
+                </div>
+                <div
+                  style={{
+                    fontFamily: "Montserrat",
+                    fontWeight: "600",
+                    fontSize: "16px",
+                    lineHeight: "100%",
+                    letterSpacing: "0%",
+                    color: "#000000",
+                  }}
+                >
+                  PKR {item?.totalPrice}
+                </div>
               </div>
             ))}
           </div>
@@ -496,22 +614,30 @@ const CheckoutPage: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
             <div className="flex items-center gap-2">
-              <span style={{
-                fontFamily: "Montserrat",
-                fontWeight: "normal",
-                fontSize: "14px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#5C5C5C",
-              }}>Shipping Price</span>
-              <span style={{
-                fontFamily: "Montserrat",
-                fontWeight: 600,
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}>0</span>
+              <span
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#5C5C5C",
+                }}
+              >
+                Shipping Price
+              </span>
+              <span
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: 600,
+                  fontSize: "16px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#000000",
+                }}
+              >
+                0
+              </span>
               <Tooltip
                 style={{
                   fontFamily: "Montserrat",
@@ -536,22 +662,30 @@ const CheckoutPage: React.FC = () => {
               </Tooltip>
             </div>
             <div className="flex items-center gap-2">
-              <span style={{
-                fontFamily: "Montserrat",
-                fontWeight: "normal",
-                fontSize: "14px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#5C5C5C",
-              }}>Total Price</span>
-              <span style={{
-                fontFamily: "Montserrat",
-                fontWeight: "600",
-                fontSize: "16px",
-                lineHeight: "100%",
-                letterSpacing: "0%",
-                color: "#000000",
-              }}>PKR {totalAmount}</span>
+              <span
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "normal",
+                  fontSize: "14px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#5C5C5C",
+                }}
+              >
+                Total Price
+              </span>
+              <span
+                style={{
+                  fontFamily: "Montserrat",
+                  fontWeight: "600",
+                  fontSize: "16px",
+                  lineHeight: "100%",
+                  letterSpacing: "0%",
+                  color: "#000000",
+                }}
+              >
+                PKR {totalAmount}
+              </span>
             </div>
           </div>
         </div>
@@ -573,7 +707,9 @@ const CheckoutPage: React.FC = () => {
                 <TextInput
                   {...formik.getFieldProps("country")}
                   value="Pakistan"
-                  styles={selectStyles(formik.touched.country && formik.errors.country)}
+                  styles={selectStyles(
+                    formik.touched.country && formik.errors.country
+                  )}
                 />
                 {formik.touched.country && formik.errors.country && (
                   <div style={errorStyle}>{formik.errors.country}</div>
@@ -587,7 +723,9 @@ const CheckoutPage: React.FC = () => {
                 <TextInput
                   {...formik.getFieldProps("state")}
                   placeholder="Write your state"
-                  styles={selectStyles(formik.touched.state && formik.errors.state)}
+                  styles={selectStyles(
+                    formik.touched.state && formik.errors.state
+                  )}
                 />
                 {formik.touched.state && formik.errors.state && (
                   <div style={errorStyle}>{formik.errors.state}</div>
@@ -604,7 +742,9 @@ const CheckoutPage: React.FC = () => {
                   onBlur={() => formik.setFieldTouched("district", true)}
                   placeholder="Select District"
                   data={["Islamabad", "Lahore", "Karachi", "Peshawar"]}
-                  styles={selectStyles(formik.touched.district && formik.errors.district)}
+                  styles={selectStyles(
+                    formik.touched.district && formik.errors.district
+                  )}
                 />
                 {formik.touched.district && formik.errors.district && (
                   <div style={errorStyle}>{formik.errors.district}</div>
@@ -624,7 +764,9 @@ const CheckoutPage: React.FC = () => {
                   onBlur={() => formik.setFieldTouched("city", true)}
                   placeholder="Select City"
                   data={["Islamabad", "Lahore", "Karachi", "Peshawar"]}
-                  styles={selectStyles(formik.touched.city && formik.errors.city)}
+                  styles={selectStyles(
+                    formik.touched.city && formik.errors.city
+                  )}
                 />
                 {formik.touched.city && formik.errors.city && (
                   <div style={errorStyle}>{formik.errors.city}</div>
@@ -638,7 +780,9 @@ const CheckoutPage: React.FC = () => {
                 <TextInput
                   {...formik.getFieldProps("address")}
                   placeholder="Write your address"
-                  styles={selectStyles(formik.touched.address && formik.errors.address)}
+                  styles={selectStyles(
+                    formik.touched.address && formik.errors.address
+                  )}
                 />
                 {formik.touched.address && formik.errors.address && (
                   <div style={errorStyle}>{formik.errors.address}</div>
@@ -652,7 +796,9 @@ const CheckoutPage: React.FC = () => {
                 <TextInput
                   {...formik.getFieldProps("postalCode")}
                   placeholder="Write postal code"
-                  styles={selectStyles(formik.touched.postalCode && formik.errors.postalCode)}
+                  styles={selectStyles(
+                    formik.touched.postalCode && formik.errors.postalCode
+                  )}
                 />
                 {formik.touched.postalCode && formik.errors.postalCode && (
                   <div style={errorStyle}>{formik.errors.postalCode}</div>

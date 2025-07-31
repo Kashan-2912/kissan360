@@ -1,7 +1,7 @@
 import {
   useSelector,
-  // useDispatch
 } from "react-redux";
+
 import {
   Table,
   Select,
@@ -11,86 +11,38 @@ import {
   ActionIcon,
   TextInput,
 } from "@mantine/core";
-import type {
-  RootState,
-  // AppDispatch
-} from "../../store";
+
 import {
-  //   setFilters,
-  //   applyFilters,
-  //   resetFilters,
-  selectFilteredOrders,
   selectOrderLoading,
   selectOrderError,
+  selectOrdersCount,
+  selectOrders,
 } from "../../store/orderHistorySlice";
+
 import { FaSortDown } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 import { CgUndo } from "react-icons/cg";
 import { useNavigate } from "react-router-dom";
 import {
   useState,
-  // useEffect
+  useEffect,
 } from "react";
-// import axios from "axios";
+
 import NotFound from "../../assets/not_found.png";
 import View from "../../assets/search-file.png";
+import type { OrderDetails } from "../../types";
 
 const OrderHistory = () => {
-  //   const dispatch = useDispatch<AppDispatch>();
-
-  // Redux selectors
-  const { filters } = useSelector((state: RootState) => state.orderHistory);
-  //   const orders = useSelector(selectFilteredOrders);
+  const orders = useSelector(selectOrders);
   const loading = useSelector(selectOrderLoading);
   const error = useSelector(selectOrderError);
+  const reduxOrders = useSelector(selectOrdersCount);
 
-  type Order = {
-    id: string;
-    orderDate: string;
-    totalProducts: number;
-    totalPrice: number;
-    status: "Shipped" | "Pending" | "Delivered" | "Cancelled";
-    currency?: string;
-  };
-
-  // All orders data
-  const [allOrders, setAllOrders] = useState<Order[]>([
-    {
-      id: "094328449#PM",
-      orderDate: "11/08/2024",
-      totalProducts: 3,
-      totalPrice: 20000,
-      status: "Shipped",
-      currency: "PKR",
-    },
-    {
-      id: "094328450#PM",
-      orderDate: "12/08/2024",
-      totalProducts: 2,
-      totalPrice: 3000,
-      status: "Pending",
-      currency: "PKR",
-    },
-    {
-      id: "094328451#PM",
-      orderDate: "13/08/2024",
-      totalProducts: 1,
-      totalPrice: 5000,
-      status: "Delivered",
-      currency: "PKR",
-    },
-    {
-      id: "094328452#PM",
-      orderDate: "14/08/2024",
-      totalProducts: 4,
-      totalPrice: 15000,
-      status: "Cancelled",
-      currency: "PKR",
-    },
-  ]);
+  console.log("REDUX ORDERS HISTORY: ", reduxOrders);
+  console.log("ORDERS DATA: ", orders);
 
   // Filtered orders for display
-  const [orders, setOrders] = useState<Order[]>(allOrders);
+  const [filteredOrders, setFilteredOrders] = useState<OrderDetails[]>([]);
 
   // Local filter states
   const [localFilters, setLocalFilters] = useState({
@@ -101,36 +53,44 @@ const OrderHistory = () => {
 
   const navigate = useNavigate();
 
+  // Update filtered orders when orders change
+  useEffect(() => {
+    setFilteredOrders(orders);
+  }, [orders]);
+
   const handleFilterChange = (field: string, value: string) => {
     setLocalFilters((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSearch = () => {
-    let filteredOrders = [...allOrders];
+    let filtered = [...orders];
 
-    // Filter by ID
+    // Filter by Order ID
     if (localFilters.searchById.trim()) {
-      filteredOrders = filteredOrders.filter((order) =>
-        order.id.toLowerCase().includes(localFilters.searchById.toLowerCase())
+      filtered = filtered.filter((order) =>
+        order.orderId.toLowerCase().includes(localFilters.searchById.toLowerCase())
       );
     }
 
     // Filter by status
     if (localFilters.searchByStatus) {
-      filteredOrders = filteredOrders.filter(
+      filtered = filtered.filter(
         (order) => order.status === localFilters.searchByStatus
       );
     }
 
-    // Filter by product (this would need to be implemented based on your product data structure)
+    // Filter by product name in ordered products
     if (localFilters.searchByProduct.trim()) {
-      // For now, this is a placeholder - you'd need to modify based on your actual product data
-      console.log("Filtering by product:", localFilters.searchByProduct);
+      filtered = filtered.filter((order) =>
+        order.orderedProducts.some((product) =>
+          product.name.toLowerCase().includes(localFilters.searchByProduct.toLowerCase())
+        )
+      );
     }
 
-    setOrders(filteredOrders);
+    setFilteredOrders(filtered);
     console.log("Searching with filters:", localFilters);
-    console.log("Filtered results:", filteredOrders);
+    console.log("Filtered results:", filtered);
   };
 
   const handleReset = () => {
@@ -139,13 +99,12 @@ const OrderHistory = () => {
       searchByStatus: "",
       searchById: "",
     });
-    setOrders(allOrders); // Reset to show all orders
+    setFilteredOrders(orders); // Reset to show all orders
   };
 
   const handleViewOrder = (orderId: string) => {
     console.log("Viewing order with ID:", orderId);
     // navigate(`/purchase/order/${orderId}`); // TODO: right now using dummy, but for later go for dynamic
-
     navigate("/purchase/order/1");
   };
 
@@ -177,6 +136,17 @@ const OrderHistory = () => {
       default:
         return "#F3F4F6";
     }
+  };
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-GB'); // Format as DD/MM/YYYY
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return `PKR ${amount.toLocaleString()}`;
   };
 
   const inputStyles = {
@@ -239,70 +209,6 @@ const OrderHistory = () => {
       position: "relative" as const,
     },
   };
-
-  //   const inputStyles = {
-  //     input: {
-  //       paddingBottom: 25,
-  //       paddingLeft: 8,
-  //       paddingRight: 8,
-  //       borderBottom: "2px solid #BFE1C8",
-  //       borderRadius: 0,
-  //       fontFamily: "Montserrat, sans-serif",
-  //       fontSize: 14,
-  //       borderTop: "none",
-  //       borderLeft: "none",
-  //       borderRight: "none",
-  //       backgroundColor: "transparent",
-  //       textAlign: "left" as const,
-  //       height: "40px",
-  //       display: "flex",
-  //       alignItems: "center",
-  //       "::placeholder": {
-  //         textAlign: "left" as const,
-  //         fontSize: 12,
-  //         fontWeight: 600,
-  //         color: "#0F783B",
-  //         fontFamily: "Montserrat, sans-serif",
-  //         lineHeight: "40px", // Match the height for vertical centering
-  //       },
-  //     },
-  //     wrapper: {
-  //       position: "relative" as const,
-  //     },
-  //   };
-
-  //   // Updated select styles for dropdown (status)
-  //   const selectStyles = {
-  //     input: {
-  //       paddingBottom: 25,
-  //       paddingLeft: 8,
-  //       paddingRight: 36,
-  //       borderBottom: "2px solid #BFE1C8",
-  //       borderRadius: 0,
-  //       fontFamily: "Montserrat, sans-serif",
-  //       fontSize: 14,
-  //       borderTop: "none",
-  //       borderLeft: "none",
-  //       borderRight: "none",
-  //       backgroundColor: "transparent",
-  //       textAlign: "left" as const,
-  //       height: "40px",
-  //       display: "flex",
-  //       alignItems: "center",
-  //       lineHeight: "40px", // Vertical centering for text
-  //     },
-  //     placeholder: {
-  //       textAlign: "left" as const,
-  //       fontSize: 12,
-  //       fontWeight: 600,
-  //       color: "#0F783B",
-  //       fontFamily: "Montserrat, sans-serif",
-  //       lineHeight: "40px", // Match the height for vertical centering
-  //     },
-  //     wrapper: {
-  //       position: "relative" as const,
-  //     },
-  //   };
 
   return (
     <div
@@ -449,27 +355,27 @@ const OrderHistory = () => {
                   </Table.Tr>
                 </Table.Thead>
                 <Table.Tbody>
-                  {orders.length > 0 ? (
-                    orders.map((order, index) => (
-                      <Table.Tr key={`${order.id}-${index}`} bg="#f3fbf2">
+                  {filteredOrders.length > 0 ? (
+                    filteredOrders.map((order, index) => (
+                      <Table.Tr key={`${order.orderId}-${index}`} bg="#f3fbf2">
                         <Table.Td style={{ paddingLeft: "16px" }}>
                           <span className="text-[#000000] font-[Montserrat] text-[10px] font-normal">
-                            {order.id}
+                            {order.orderId}
                           </span>
                         </Table.Td>
                         <Table.Td>
                           <span className="text-[#000000] font-[Montserrat] text-[12px]">
-                            {order.orderDate}
+                            {formatDate(order.orderDate)}
                           </span>
                         </Table.Td>
                         <Table.Td>
                           <span className="text-[#000000] font-[Montserrat] text-[10px] font-semibold">
-                            {order.totalProducts}
+                            {order.totalItems}
                           </span>
                         </Table.Td>
                         <Table.Td>
                           <span className="text-[#000000] font-[Montserrat] text-[10px] font-semibold">
-                            {order.currency} {order.totalPrice.toLocaleString()}
+                            {formatCurrency(order.totalAmount)}
                           </span>
                         </Table.Td>
                         <Table.Td>
@@ -499,7 +405,7 @@ const OrderHistory = () => {
                         <Table.Td>
                           <Group gap="xs">
                             <ActionIcon
-                              onClick={() => handleViewOrder(order.id)}
+                              onClick={() => handleViewOrder(order.orderId)}
                               variant="light"
                               size="lg"
                               radius="xl"
@@ -545,19 +451,19 @@ const OrderHistory = () => {
 
           {/* Mobile Card View */}
           <div className="md:hidden flex flex-col gap-4">
-            {orders.length > 0 ? (
-              orders.map((order, index) => (
+            {filteredOrders.length > 0 ? (
+              filteredOrders.map((order, index) => (
                 <div
-                  key={`${order.id}-${index}`}
+                  key={`${order.orderId}-${index}`}
                   className="border rounded-lg p-4 flex flex-col gap-3 shadow-sm bg-[#f3fbf2]"
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex flex-col gap-1">
                       <h3 className="font-semibold text-sm text-[#000000] font-[Montserrat]">
-                        Order ID: {order.id}
+                        Order ID: {order.orderId}
                       </h3>
                       <p className="text-xs text-[#666666] font-[Montserrat]">
-                        {order.orderDate}
+                        {formatDate(order.orderDate)}
                       </p>
                     </div>
                     <Badge
@@ -585,7 +491,7 @@ const OrderHistory = () => {
                           Products:
                         </span>{" "}
                         <span className="font-semibold text-[#000000]">
-                          {order.totalProducts}
+                          {order.totalItems}
                         </span>
                       </p>
                       <p className="text-xs font-[Montserrat]">
@@ -593,13 +499,13 @@ const OrderHistory = () => {
                           Total:
                         </span>{" "}
                         <span className="font-semibold text-[#000000]">
-                          {order.currency} {order.totalPrice.toLocaleString()}
+                          {formatCurrency(order.totalAmount)}
                         </span>
                       </p>
                     </div>
 
                     <ActionIcon
-                      onClick={() => handleViewOrder(order.id)}
+                      onClick={() => handleViewOrder(order.orderId)}
                       variant="light"
                       size="lg"
                       radius="xl"

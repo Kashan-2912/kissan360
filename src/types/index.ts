@@ -50,19 +50,55 @@ export interface PurchasedProductState {
 }
 
 export interface ProductTableItem {
-  id: string
-  name: string
-  category: string
-  availableQuantity: number
-  unit: string
-  status: "Submitted" | "Rejected" | "Live for sale"
-  image: string
+  id: string;
+  name: string;
+  category: string;
+  availableQuantity: number;
+  unit: string;
+  status: "Submitted" | "Rejected" | "Live for sale";
+  image: string;
 }
 
 export interface ProductFilters {
-  searchByName: string
-  searchByStatus: string
-  searchByCategory: string
+  searchByName: string;
+  searchByStatus: string;
+  searchByCategory: string;
+}
+
+export interface OrderedProduct extends PurchaseProduct {
+  orderId: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+export interface OrderDetails {
+  orderId: string;
+  customerName: string;
+  customerEmail: string;
+  contactNumber: string;
+  alternateNumber: string;
+  shippingAddress: {
+    country: string;
+    state: string;
+    district: string;
+    city: string;
+    address: string;
+    postalCode: string;
+  };
+  orderDate: string;
+  status: "Pending" | "Shipped" | "Delivered" | "Cancelled";
+  orderedProducts: OrderedProduct[];
+  totalItems: number;
+  totalAmount: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface OrderState {
+  orders: OrderDetails[];
+  loading: boolean;
+  error: string | null;
 }
 
 export interface RootState {
