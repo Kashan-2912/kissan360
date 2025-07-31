@@ -77,7 +77,7 @@ const orderHistorySlice = createSlice({
         action.payload;
 
       const newOrder: OrderDetails = {
-        orderId: `ORD-${Date.now()}`,
+        orderId: Date.now().toString(),
         ...customerInfo,
         orderDate: new Date().toISOString(),
         status: "Pending",

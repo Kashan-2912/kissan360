@@ -1,9 +1,23 @@
-import React, { useEffect } from 'react';
-import { Container, Group, Text, Stack, Paper, Image, Flex } from '@mantine/core';
-import { useSelector, useDispatch } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import { selectOrders, selectSelectedOrder, setSelectedOrder } from '../../store/orderHistorySlice';
-import type { OrderDetails, OrderedProduct } from '../../types';
+import React, { useEffect } from "react";
+import {
+  Container,
+  Group,
+  Text,
+  Stack,
+  Paper,
+  Image,
+  Flex,
+  // Box,
+  Grid,
+} from "@mantine/core";
+import { useSelector, useDispatch } from "react-redux";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  selectOrders,
+  selectSelectedOrder,
+  setSelectedOrder,
+} from "../../store/orderHistorySlice";
+import type { OrderDetails, OrderedProduct } from "../../types";
 import IMG from "../../assets/f3.png";
 
 const ViewOrderDetails: React.FC = () => {
@@ -11,17 +25,15 @@ const ViewOrderDetails: React.FC = () => {
   const navigate = useNavigate();
   const { orderId } = useParams<{ orderId: string }>();
 
-  console.log("ORDER ID: ", orderId)
-  
+  console.log("ORDER ID: ", orderId);
+
   const orders = useSelector(selectOrders);
   const selectedOrder = useSelector(selectSelectedOrder);
-
-  // console.log("selected order id: ", selectedOrder?.orderedProducts.length)
 
   // Find and set the selected order when component mounts or orderId changes
   useEffect(() => {
     if (orderId && orders.length > 0) {
-      const order = orders.find(o => o.orderId === orderId);
+      const order = orders.find((o) => o.orderId === orderId);
       if (order) {
         dispatch(setSelectedOrder(order));
       } else {
@@ -34,8 +46,11 @@ const ViewOrderDetails: React.FC = () => {
   // If no order is selected or found, show loading or redirect
   if (!selectedOrder) {
     return (
-      <Container style={{ padding: '2px', minHeight: '100vh' }}>
-        <Paper bg={"transparent"} style={{ maxWidth: '896px', borderRadius: '8px' }}>
+      <Container style={{ padding: "2px", minHeight: "100vh" }}>
+        <Paper
+          bg={"transparent"}
+          style={{ maxWidth: "896px", borderRadius: "8px" }}
+        >
           <Text>Loading order details...</Text>
         </Paper>
       </Container>
@@ -60,11 +75,13 @@ const ViewOrderDetails: React.FC = () => {
   // Format date for display
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB');
+    return date.toLocaleDateString("en-GB");
   };
 
   // Format shipping address
-  const formatShippingAddress = (shippingAddress: OrderDetails['shippingAddress']) => {
+  const formatShippingAddress = (
+    shippingAddress: OrderDetails["shippingAddress"]
+  ) => {
     return `${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.district}, ${shippingAddress.state}, ${shippingAddress.country} - ${shippingAddress.postalCode}`;
   };
 
@@ -73,60 +90,91 @@ const ViewOrderDetails: React.FC = () => {
     return `PKR ${amount.toLocaleString()}`;
   };
 
+  // Info Item Component for grid layout
+  const InfoItem: React.FC<{
+    label: string;
+    value: string;
+    color?: string;
+  }> = ({ label, value, color = "black" }) => (
+    <Group gap={16}>
+      <Text
+        style={{
+          fontWeight: 400,
+          fontSize: "14px",
+          color: "#5C5C5C",
+          fontFamily: "Montserrat",
+        }}
+      >
+        {label}
+      </Text>
+      <Text
+        style={{
+          fontWeight: 600,
+          fontSize: "16px",
+          color: color,
+          fontFamily: "Montserrat",
+        }}
+      >
+        {value}
+      </Text>
+    </Group>
+  );
+
   const ProductCard: React.FC<{ product: OrderedProduct }> = ({ product }) => (
-    <Flex align="center" gap={42} style={{ width: '579px', height: '182px' }}>
+    <Flex align="center" gap={42} style={{ width: "100%", maxWidth: "579px" }}>
       {/* Image Container with white background */}
       <Paper
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          boxShadow: '0px 4px 10px 0px rgba(0,0,0,0.15)',
-          width: '206px',
-          height: '182px',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "white",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px 0px rgba(0,0,0,0.15)",
+          width: "206px",
+          height: "182px",
+          flexShrink: 0,
         }}
       >
         <Image
-          src={product.image || IMG} // Use product image or fallback
+          src={product.image || IMG}
           alt={product.name}
           style={{
-            width: '98px',
-            height: '133px',
-            objectFit: 'cover',
-            borderRadius: '4px',
+            width: "98px",
+            height: "133px",
+            objectFit: "cover",
+            borderRadius: "4px",
           }}
         />
       </Paper>
-      
+
       {/* Product Details Container - Left aligned */}
-      <Stack justify="center" style={{ width: '167px', height: '122px' }} gap={16}>
+      <Stack justify="center" style={{ flex: 1 }} gap={16}>
         {/* Product Name */}
         <Text
           style={{
-            textAlign: 'left',
-            color: 'black',
+            textAlign: "left",
+            color: "black",
             fontWeight: 600,
-            fontSize: '24px',
-            lineHeight: '1',
-            letterSpacing: 'normal',
-            fontFamily: 'Montserrat'
+            fontSize: "24px",
+            lineHeight: "1.2",
+            letterSpacing: "normal",
+            fontFamily: "Montserrat",
           }}
         >
           {product.name}
         </Text>
-        
+
         {/* Category */}
-        <Group gap={4} style={{ justifyContent: 'flex-start' }}>
+        <Group gap={4} style={{ justifyContent: "flex-start" }}>
           <Text
             style={{
               fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#7B7B7B',
-              fontFamily: 'Poppins'
+              fontSize: "16px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#7B7B7B",
+              fontFamily: "Poppins",
             }}
           >
             Category:
@@ -134,27 +182,27 @@ const ViewOrderDetails: React.FC = () => {
           <Text
             style={{
               fontWeight: 500,
-              fontSize: '16px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#BE8B45',
-              fontFamily: 'Poppins'
+              fontSize: "16px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#BE8B45",
+              fontFamily: "Poppins",
             }}
           >
             {product.category}
           </Text>
         </Group>
-        
+
         {/* Quantity */}
-        <Group gap={4} style={{ justifyContent: 'flex-start' }}>
+        <Group gap={4} style={{ justifyContent: "flex-start" }}>
           <Text
             style={{
               fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#7B7B7B',
-              fontFamily: 'Poppins'
+              fontSize: "14px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#7B7B7B",
+              fontFamily: "Poppins",
             }}
           >
             Quantity:
@@ -162,27 +210,27 @@ const ViewOrderDetails: React.FC = () => {
           <Text
             style={{
               fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#202020',
-              fontFamily: 'Poppins'
+              fontSize: "14px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#202020",
+              fontFamily: "Poppins",
             }}
           >
             {product.quantity}
           </Text>
         </Group>
-        
+
         {/* Unit Price */}
-        <Group gap={4} style={{ justifyContent: 'flex-start' }}>
+        <Group gap={4} style={{ justifyContent: "flex-start" }}>
           <Text
             style={{
               fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#7B7B7B',
-              fontFamily: 'Poppins'
+              fontSize: "16px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#7B7B7B",
+              fontFamily: "Poppins",
             }}
           >
             Unit Price:
@@ -190,11 +238,11 @@ const ViewOrderDetails: React.FC = () => {
           <Text
             style={{
               fontWeight: 600,
-              fontSize: '16px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#202020',
-              fontFamily: 'Poppins'
+              fontSize: "16px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#202020",
+              fontFamily: "Poppins",
             }}
           >
             {formatCurrency(product.unitPrice)}
@@ -202,15 +250,15 @@ const ViewOrderDetails: React.FC = () => {
         </Group>
 
         {/* Total Price for this product */}
-        <Group gap={4} style={{ justifyContent: 'flex-start' }}>
+        <Group gap={4} style={{ justifyContent: "flex-start" }}>
           <Text
             style={{
               fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#7B7B7B',
-              fontFamily: 'Poppins'
+              fontSize: "16px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#7B7B7B",
+              fontFamily: "Poppins",
             }}
           >
             Total:
@@ -218,11 +266,11 @@ const ViewOrderDetails: React.FC = () => {
           <Text
             style={{
               fontWeight: 600,
-              fontSize: '16px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              color: '#0F783B',
-              fontFamily: 'Poppins'
+              fontSize: "16px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              color: "#0F783B",
+              fontFamily: "Poppins",
             }}
           >
             {formatCurrency(product.totalPrice)}
@@ -233,307 +281,117 @@ const ViewOrderDetails: React.FC = () => {
   );
 
   return (
-    <Container style={{ padding: '2px', minHeight: '100vh' }}>
-      <Paper bg={"transparent"} style={{ maxWidth: '896px', borderRadius: '8px' }}>
+    <Container
+      size="lg"
+      style={{ padding: "16px", minHeight: "100vh", marginBottom: "100px" }}
+    >
+      <Paper
+        bg={"transparent"}
+        style={{ maxWidth: "1000px", borderRadius: "8px", margin: "0 auto" }}
+      >
         {/* Order Header Information */}
-        <Stack gap={32} style={{ marginBottom: '40px' }}>
-          {/* First Row: Order ID, Order Date, Total Price */}
-          <Flex align="center" justify="space-between">
-            {/* Order ID */}
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '1',
-                  letterSpacing: 'normal',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Order ID
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  lineHeight: '1',
-                  letterSpacing: 'normal',
-                  color: 'black',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {selectedOrder.orderId}
-              </Text>
-            </Group>
-            
-            {/* Order Date */}
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '1',
-                  letterSpacing: 'normal',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Order Date
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  lineHeight: '1',
-                  letterSpacing: 'normal',
-                  color: 'black',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {formatDate(selectedOrder.orderDate)}
-              </Text>
-            </Group>
-            
-            {/* Total Price */}
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '1',
-                  letterSpacing: 'normal',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Total Price
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  lineHeight: '1',
-                  letterSpacing: 'normal',
-                  color: 'black',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {formatCurrency(selectedOrder.totalAmount)}
-              </Text>
-            </Group>
-          </Flex>
-          
-          {/* Second Row: Status, Customer Info */}
-          <Flex align="flex-start" justify="space-between" style={{ width: '100%' }}>
-            {/* Status */}
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  whiteSpace: 'nowrap',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Status
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  color: getStatusColor(selectedOrder.status),
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {selectedOrder.status}
-              </Text>
-            </Group>
-            
-            {/* Customer Info */}
-            <Group gap={16} style={{ marginLeft: '80px' }}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  whiteSpace: 'nowrap',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Customer
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  color: 'black',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {selectedOrder.customerName}
-              </Text>
-            </Group>
-          </Flex>
-
-          {/* Third Row: Shipping Details */}
-          <Flex align="flex-start" justify="flex-start" style={{ width: '100%' }}>
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  whiteSpace: 'nowrap',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Shipping Address
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  color: 'black',
-                  fontFamily: 'Montserrat',
-                  maxWidth: '600px',
-                  lineHeight: '1.4'
-                }}
-              >
-                {formatShippingAddress(selectedOrder.shippingAddress)}
-              </Text>
-            </Group>
-          </Flex>
-
-          {/* Contact Information */}
-          <Flex align="center" justify="space-between">
-            {/* Email */}
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  whiteSpace: 'nowrap',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Email
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  color: 'black',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {selectedOrder.customerEmail}
-              </Text>
-            </Group>
-            
-            {/* Contact Number */}
-            <Group gap={16}>
-              <Text
-                style={{
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  whiteSpace: 'nowrap',
-                  color: '#5C5C5C',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                Contact
-              </Text>
-              <Text
-                style={{
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  color: 'black',
-                  fontFamily: 'Montserrat'
-                }}
-              >
-                {selectedOrder.contactNumber}
-              </Text>
-            </Group>
-
+        <Group gap={32} style={{ marginBottom: "40px" }}>
+          {/* Order Details Grid */}
+          <Grid>
+            <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem label="Order ID" value={selectedOrder.orderId} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem
+                label="Order Date"
+                value={formatDate(selectedOrder.orderDate)}
+              />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem
+                label="Total Price"
+                value={formatCurrency(selectedOrder.totalAmount)}
+              />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem
+                label="Status"
+                value={selectedOrder.status}
+                color={getStatusColor(selectedOrder.status)}
+              />
+            </Grid.Col>
+            {/* <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem label="Customer" value={selectedOrder.customerName} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 12, md: 12 }}>
+              <InfoItem label="Email" value={selectedOrder.customerEmail} />
+            </Grid.Col>
+            <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem label="Contact" value={selectedOrder.contactNumber} />
+            </Grid.Col>
             {selectedOrder.alternateNumber && (
-              <Group gap={16}>
+              <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                <InfoItem label="Alternate Contact" value={selectedOrder.alternateNumber} />
+              </Grid.Col>
+            )} */}
+            <Grid.Col span={{ base: 12, md: 8 }}>
+              <Group gap={16} align="flex-start">
                 <Text
                   style={{
                     fontWeight: 400,
-                    fontSize: '14px',
-                    whiteSpace: 'nowrap',
-                    color: '#5C5C5C',
-                    fontFamily: 'Montserrat'
+                    fontSize: "14px",
+                    color: "#5C5C5C",
+                    fontFamily: "Montserrat",
+                    whiteSpace: "nowrap",
                   }}
                 >
-                  Alternate
+                  Shipping Address
                 </Text>
                 <Text
                   style={{
                     fontWeight: 600,
-                    fontSize: '16px',
-                    color: 'black',
-                    fontFamily: 'Montserrat'
+                    fontSize: "16px",
+                    color: "black",
+                    fontFamily: "Montserrat",
+                    lineHeight: "1.4",
+                    flex: 1,
                   }}
                 >
-                  {selectedOrder.alternateNumber}
+                  {formatShippingAddress(selectedOrder.shippingAddress)}
                 </Text>
               </Group>
-            )}
-          </Flex>
-        </Stack>
-        
+            </Grid.Col>
+          </Grid>
+        </Group>
+
         {/* Product Information Section */}
-        <Stack style={{ marginTop: '48px' }}>
+        <Stack style={{ marginTop: "48px" }}>
           <Text
             style={{
               fontWeight: 700,
-              fontSize: '18px',
-              lineHeight: '1',
-              letterSpacing: 'normal',
-              marginBottom: '4px',
-              color: '#BE8B45',
-              fontFamily: 'Montserrat'
+              fontSize: "18px",
+              lineHeight: "1",
+              letterSpacing: "normal",
+              marginBottom: "4px",
+              color: "#BE8B45",
+              fontFamily: "Montserrat",
             }}
           >
             Product Information
           </Text>
-          
+
           {/* Total Products */}
-          <Group gap={16} style={{ marginBottom: '32px' }}>
-            <Text
-              style={{
-                fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '1',
-                letterSpacing: 'normal',
-                color: '#5C5C5C',
-                fontFamily: 'Montserrat'
-              }}
-            >
-              Total Products
-            </Text>
-            <Text
-              style={{
-                fontWeight: 600,
-                fontSize: '16px',
-                lineHeight: '1',
-                letterSpacing: 'normal',
-                color: 'black',
-                fontFamily: 'Montserrat'
-              }}
-            >
-              {selectedOrder.totalItems}
-            </Text>
-          </Group>
-          
+          <Grid style={{ marginBottom: "32px" }}>
+            <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+              <InfoItem
+                label="Total Products"
+                value={selectedOrder.totalItems.toString()}
+              />
+            </Grid.Col>
+          </Grid>
+
           {/* Products List */}
           <Stack gap={30}>
             {selectedOrder.orderedProducts.map((product) => (
-              <ProductCard key={`${product.id}-${product.orderId}`} product={product} />
+              <ProductCard
+                key={`${product.id}-${product.orderId}`}
+                product={product}
+              />
             ))}
           </Stack>
         </Stack>
