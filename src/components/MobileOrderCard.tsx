@@ -83,6 +83,7 @@ const MobileOrderCard = ({ order }: { order: OrderDetails }) => {
           {/* ID and Product Name */}
           <Stack gap={2}>
             <Text
+            component="div"
               style={{
                 fontSize: "18px",
                 fontWeight: 600,
